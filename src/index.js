@@ -1,4 +1,3 @@
-const fs = require("fs").promises;
 const { makeExecutableSchema } = require("@graphql-tools/schema");
 const { addMocksToSchema, MockList } = require("@graphql-tools/mock");
 const { graphql } = require("graphql");
@@ -17,11 +16,6 @@ const list =
   };
 
 class GraphQLMock {
-  static async fromFile({ schemaPath }) {
-    const typeDefs = await fs.readFile(schemaPath, "utf-8");
-    return new GraphQLMock({ typeDefs });
-  }
-
   constructor({ typeDefs, overrides, seed = 666 }) {
     const schema = makeExecutableSchema({
       typeDefs,
