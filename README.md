@@ -68,7 +68,6 @@ expect(result, "to satisfy", {
       posts: [
         { id: "1828976169320448", title: "jeminode" },
         { id: "4158848130613248", title: "orimipon" },
-        { id: "4620302535360512", title: "rurzilru" },
       ],
     },
   },
@@ -100,7 +99,6 @@ expect(result, "to satisfy", {
       posts: [
         { id: "1828976169320448", title: "jeminode" },
         { id: "4158848130613248", title: "orimipon" },
-        { id: "4620302535360512", title: "rurzilru" },
       ],
     },
   },
@@ -113,15 +111,19 @@ The each of the top-level override function will be given a [chancejs](https://w
 
 See the [mocking documentation](https://www.graphql-tools.com/docs/mocking) for more details.
 
+## Controlling a collection resolver
+
 ```js
+import { list } from "graphql-fakester"
+
 mock = new GraphQLMock({
   typeDefs,
   overrides: {
-    Author: (chance, root, args, context, info) => ({
+    Author: {
       firstName: "Jane",
       lastName: "Doe",
-      email: chance.email(),
-    }),
+      posts: list({ length: 3 }),
+    },
   },
 });
 
@@ -130,18 +132,49 @@ result = await moch.execute(authorQuery, { id: "42" });
 expect(result, "to satisfy", {
   data: {
     author: {
-      firstName: "Jane",
-      lastName: "Doe",
-      email: "ketis@ziluwi.cw",
+      firstName: 'herubju',
+      lastName: 'nocpebe'
+      email: "kelecse",
       posts: [
         { id: "1828976169320448", title: "jeminode" },
         { id: "4158848130613248", title: "orimipon" },
-        { id: "4620302535360512", title: "rurzilru" },
+        { id: "4158848130613248", title: "orimipon" },
       ],
     },
   },
 });
 ```
+
+It is also possible to use `min` and `max` instead of the `length`.
+
+```js
+mock = new GraphQLMock({
+  typeDefs,
+  overrides: {
+    Author: {
+      posts: list({ min: 1, max: 5 }),
+    },
+  },
+});
+
+result = await moch.execute(authorQuery, { id: "42" });
+
+expect(result, "to satisfy", {
+  data: {
+    author: {
+      firstName: 'herubju',
+      lastName: 'nocpebe'
+      email: "kelecse",
+      posts: [
+        { id: "1828976169320448", title: "jeminode" },
+        { id: "4158848130613248", title: "orimipon" },
+      ],
+    },
+  },
+});
+```
+
+Notice `min` defaults to 0 and `max` defaults to 10, so can just call the list function without any arguments, or only send in either `min` or `max`.
 
 ## Creating a preconfigured mock
 
@@ -184,7 +217,6 @@ expect(result, "to satisfy", {
       posts: [
         { id: "6325555974635520", title: "title-ha" },
         { id: "308014672248832", title: "title-felsuh" },
-        { id: "1702188611010560", title: "title-rizede" },
       ],
     },
   },

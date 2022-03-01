@@ -6,7 +6,7 @@ const mergeWith = require("lodash/mergeWith");
 const Chance = require("chance");
 
 const list =
-  ({ min = 0, max = 10, length }) =>
+  ({ min = 0, max = 10, length } = {}) =>
   (chance) => {
     if (typeof length !== "number") {
       length = chance.natural({ min, max });
