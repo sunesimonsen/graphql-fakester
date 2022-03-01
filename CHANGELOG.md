@@ -1,3 +1,7 @@
+### v0.3.0 (2022-03-01)
+
+- [Document the list mock](https://github.com/sunesimonsen/graphql-fakester/commit/c974d5f3b695c6985e0079bbca37abc223280c70) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.2.0 (2022-03-01)
 
 #### Pull requests
