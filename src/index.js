@@ -6,14 +6,6 @@ const merge = require("lodash/merge");
 const mergeWith = require("lodash/mergeWith");
 const Chance = require("chance");
 
-const defaultMocks = {
-  Boolean: (chance) => chance.bool(),
-  Float: (chance) => chance.floating({ min: -100, max: 100 }),
-  Int: (chance) => chance.integer({ min: -100, max: 100 }),
-  ID: (chance) => String(chance.natural()),
-  String: (chance) => chance.word({ syllables: 3 }),
-};
-
 const list =
   ({ min = 0, max = 10, length }) =>
   (chance) => {
@@ -30,7 +22,7 @@ class GraphQLMock {
     return new GraphQLMock({ typeDefs });
   }
 
-  constructor({ typeDefs, mocks, seed = 666 }) {
+  constructor({ typeDefs, overrides, seed = 666 }) {
     const schema = makeExecutableSchema({
       typeDefs,
       resolverValidationOptions: { requireResolversForResolveType: false },
@@ -38,9 +30,17 @@ class GraphQLMock {
 
     const defaultChance = new Chance(seed);
 
+    const defaultMocks = {
+      Boolean: (chance) => chance.bool(),
+      Float: (chance) => chance.floating({ min: -100, max: 100 }),
+      Int: (chance) => chance.integer({ min: -100, max: 100 }),
+      ID: (chance) => String(chance.natural()),
+      String: (chance) => chance.word({ syllables: 3 }),
+    };
+
     const mockArray = [
       defaultMocks,
-      ...(Array.isArray(mocks) ? mocks : [mocks]).filter(Boolean),
+      ...(Array.isArray(overrides) ? overrides : [overrides]).filter(Boolean),
     ];
 
     this.schema = addMocksToSchema({

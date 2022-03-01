@@ -9,6 +9,7 @@ const typeDefs = `
     id: ID!
     firstName: String
     lastName: String
+    email: String
     posts: [Post]
   }
 
@@ -43,6 +44,7 @@ const authorQuery = `
     author(id: $id) {
       firstName
       lastName
+      email
       posts {
         id
         title
@@ -90,7 +92,7 @@ describe("graphql-fakester", () => {
     beforeEach(async () => {
       mock = new GraphQLMock({
         typeDefs,
-        mocks: {
+        overrides: {
           Author: (chance, root, args, context, info) => ({
             firstName: chance.name(),
           }),
@@ -104,7 +106,7 @@ describe("graphql-fakester", () => {
       expect(
         result,
         "to inspect as snapshot",
-        "{ data: { author: { firstName: 'Max Spencer', lastName: 'kelecse' } } }"
+        "{ data: { author: { firstName: 'Max Spencer', lastName: 'herubju' } } }"
       );
     });
   });
@@ -113,7 +115,7 @@ describe("graphql-fakester", () => {
     beforeEach(async () => {
       mock = new GraphQLMock({
         typeDefs,
-        mocks: {
+        overrides: {
           Author: { firstName: "Jane", lastName: "Doe" },
         },
       });
@@ -134,8 +136,11 @@ describe("graphql-fakester", () => {
     beforeEach(async () => {
       mock = new GraphQLMock({
         typeDefs,
-        mocks: {
-          Author: { posts: list({ length: 3 }) },
+        overrides: {
+          Author: (chance) => ({
+            email: chance.email(),
+            posts: list({ length: 3 }),
+          }),
           Post: (chance) => ({
             title: `title-${chance.word()}`,
           }),
@@ -153,12 +158,13 @@ describe("graphql-fakester", () => {
           {
             data: {
               author: {
-                firstName: 'Jane',
-                lastName: 'Doe',
+                firstName: 'herubju',
+                lastName: 'nocpebe',
+                email: 'ketis@ziluwi.cw',
                 posts: [
-                  { id: '1828976169320448', title: 'title-ha' },
-                  { id: '4158848130613248', title: 'title-felsuh' },
-                  { id: '4620302535360512', title: 'title-rizede' }
+                  { id: '6325555974635520', title: 'title-ha' },
+                  { id: '308014672248832', title: 'title-felsuh' },
+                  { id: '1702188611010560', title: 'title-rizede' }
                 ]
               }
             }
@@ -172,7 +178,7 @@ describe("graphql-fakester", () => {
     beforeEach(async () => {
       mock = new GraphQLMock({
         typeDefs,
-        mocks: {
+        overrides: {
           Mutation: {
             upvotePost: {
               votes: 42,
@@ -192,7 +198,8 @@ describe("graphql-fakester", () => {
           {
             data: {
               upvotePost: {
-                title: 'title-nuv', author: { firstName: 'Jane', lastName: 'Doe' },
+                title: 'herubju',
+                author: { firstName: 'nocpebe', lastName: 'kelecse' },
                 votes: 42
               }
             }
@@ -200,5 +207,57 @@ describe("graphql-fakester", () => {
         `
       );
     });
+  });
+
+  it("allows to create a custom configured mock using inheritance", async () => {
+    class MyMock extends GraphQLMock {
+      constructor(overrides) {
+        super({
+          typeDefs,
+          overrides: [
+            {
+              Author: (chance) => ({
+                email: chance.email(),
+                posts: list({ length: 3 }),
+              }),
+              Post: (chance) => ({
+                title: `title-${chance.word()}`,
+              }),
+            },
+            overrides,
+          ],
+        });
+      }
+    }
+
+    const mock = new MyMock({
+      Author: (chance) => ({
+        firstName: "Jane",
+        lastName: "Doe",
+      }),
+    });
+
+    const result = await mock.execute(authorQuery, { id: authorId });
+
+    expect(
+      result,
+      "to inspect as snapshot",
+      expect.unindent`
+          {
+            data: {
+              author: {
+                firstName: 'Jane',
+                lastName: 'Doe',
+                email: 'ketis@ziluwi.cw',
+                posts: [
+                  { id: '6325555974635520', title: 'title-ha' },
+                  { id: '308014672248832', title: 'title-felsuh' },
+                  { id: '1702188611010560', title: 'title-rizede' }
+                ]
+              }
+            }
+          }
+        `
+    );
   });
 });
