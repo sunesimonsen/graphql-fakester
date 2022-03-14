@@ -157,7 +157,7 @@ mock = new GraphQLMock({
   },
 });
 
-result = await moch.execute(authorQuery, { id: "42" });
+result = await mock.execute(authorQuery, { id: "42" });
 
 expect(result, "to satisfy", {
   data: {
