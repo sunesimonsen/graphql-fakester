@@ -10,7 +10,7 @@
       {
         "devDependencies": ["**/*.spec.js"],
         "optionalDependencies": false,
-        "peerDependencies": false
+        "peerDependencies": true
       }
     ],
     "mocha/no-exclusive-tests": "error",
