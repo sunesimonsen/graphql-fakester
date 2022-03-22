@@ -1,3 +1,14 @@
+### v0.7.0 (2022-03-22)
+
+#### Pull requests
+
+- [#12](https://github.com/sunesimonsen/graphql-fakester/pull/12) Generate stub data based on a type name ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
+#### Commits to main
+
+- [Regenerate snapshots](https://github.com/sunesimonsen/graphql-fakester/commit/e9df94b7e35eba6f6a7472962316688bfc18fa3c) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+- [Put all test in a describe for execute](https://github.com/sunesimonsen/graphql-fakester/commit/911762d8bc601da3bb8e5443a72e8c0b7a3e5b23) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.6.0 (2022-03-22)
 
 #### Pull requests
