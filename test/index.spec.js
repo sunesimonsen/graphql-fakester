@@ -73,90 +73,91 @@ const postId = "7";
 describe("graphql-fakester", () => {
   let mock;
 
-  describe("when no mocks has been provided", () => {
-    beforeEach(async () => {
-      mock = new GraphQLMock({ typeDefs });
-    });
+  describe("execute", () => {
+    describe("when no mocks has been provided", () => {
+      beforeEach(async () => {
+        mock = new GraphQLMock({ typeDefs });
+      });
 
-    it("mocks basic types out of the box", async () => {
-      const result = await mock.execute(authorNameQuery, { id: authorId });
+      it("mocks basic types out of the box", async () => {
+        const result = await mock.execute(authorNameQuery, { id: authorId });
 
-      expect(
-        result,
-        "to inspect as snapshot",
-        "{ data: { author: { firstName: 'herubju', lastName: 'nocpebe' } } }"
-      );
-    });
-  });
-
-  describe("when mocking a field on an object", () => {
-    beforeEach(async () => {
-      mock = new GraphQLMock({
-        typeDefs,
-        mocks: {
-          Author: (chance, root, args, context, info) => ({
-            firstName: chance.name(),
-          }),
-        },
+        expect(
+          result,
+          "to inspect as snapshot",
+          "{ data: { author: { firstName: 'herubju', lastName: 'nocpebe' } } }"
+        );
       });
     });
 
-    it("the mocked field will be used", async () => {
-      const result = await mock.execute(authorNameQuery, { id: authorId });
-
-      expect(
-        result,
-        "to inspect as snapshot",
-        "{ data: { author: { firstName: 'Max Spencer', lastName: 'herubju' } } }"
-      );
-    });
-  });
-
-  describe("when hardcoding a field on an object", () => {
-    beforeEach(async () => {
-      mock = new GraphQLMock({
-        typeDefs,
-        mocks: {
-          Author: { firstName: "Jane", lastName: "Doe" },
-        },
-      });
-    });
-
-    it("the mocked field will be used", async () => {
-      const result = await mock.execute(authorNameQuery, { id: authorId });
-
-      expect(
-        result,
-        "to inspect as snapshot",
-        "{ data: { author: { firstName: 'Jane', lastName: 'Doe' } } }"
-      );
-    });
-  });
-
-  describe("when override the default resolvers", () => {
-    beforeEach(async () => {
-      mock = new GraphQLMock({
-        typeDefs,
-        mocks: {
-          Author: (chance) => ({
-            email: chance.email(),
-          }),
-        },
-        resolvers: (store) => ({
-          Query: {
-            author: (root, { id }) => store.get("Author", id),
+    describe("when mocking a field on an object", () => {
+      beforeEach(async () => {
+        mock = new GraphQLMock({
+          typeDefs,
+          mocks: {
+            Author: (chance, root, args, context, info) => ({
+              firstName: chance.name(),
+            }),
           },
-        }),
+        });
+      });
+
+      it("the mocked field will be used", async () => {
+        const result = await mock.execute(authorNameQuery, { id: authorId });
+
+        expect(
+          result,
+          "to inspect as snapshot",
+          "{ data: { author: { firstName: 'Max Spencer', lastName: 'herubju' } } }"
+        );
       });
     });
 
-    it("uses the resolvers", async () => {
-      const result = await mock.execute(authorQuery, { id: authorId });
+    describe("when hardcoding a field on an object", () => {
+      beforeEach(async () => {
+        mock = new GraphQLMock({
+          typeDefs,
+          mocks: {
+            Author: { firstName: "Jane", lastName: "Doe" },
+          },
+        });
+      });
 
-      expect(
-        result,
-        "to inspect as snapshot",
-        expect.unindent`
+      it("the mocked field will be used", async () => {
+        const result = await mock.execute(authorNameQuery, { id: authorId });
+
+        expect(
+          result,
+          "to inspect as snapshot",
+          "{ data: { author: { firstName: 'Jane', lastName: 'Doe' } } }"
+        );
+      });
+    });
+
+    describe("when override the default resolvers", () => {
+      beforeEach(async () => {
+        mock = new GraphQLMock({
+          typeDefs,
+          mocks: {
+            Author: (chance) => ({
+              email: chance.email(),
+            }),
+          },
+          resolvers: (store) => ({
+            Query: {
+              author: (root, { id }) => store.get("Author", id),
+            },
+          }),
+        });
+      });
+
+      it("uses the resolvers", async () => {
+        const result = await mock.execute(authorQuery, { id: authorId });
+
+        expect(
+          result,
+          "to inspect as snapshot",
+          expect.unindent`
         {
           data: {
             author: {
@@ -172,33 +173,33 @@ describe("graphql-fakester", () => {
           }
         }
       `
-      );
-    });
-  });
-
-  describe("when mocking a list resolver", () => {
-    beforeEach(async () => {
-      mock = new GraphQLMock({
-        typeDefs,
-        mocks: {
-          Author: (chance) => ({
-            email: chance.email(),
-            posts: list({ length: 3 }),
-          }),
-          Post: (chance) => ({
-            title: `title-${chance.word()}`,
-          }),
-        },
+        );
       });
     });
 
-    it("returns the specified number of items", async () => {
-      const result = await mock.execute(authorQuery, { id: authorId });
+    describe("when mocking a list resolver", () => {
+      beforeEach(async () => {
+        mock = new GraphQLMock({
+          typeDefs,
+          mocks: {
+            Author: (chance) => ({
+              email: chance.email(),
+              posts: list({ length: 3 }),
+            }),
+            Post: (chance) => ({
+              title: `title-${chance.word()}`,
+            }),
+          },
+        });
+      });
 
-      expect(
-        result,
-        "to inspect as snapshot",
-        expect.unindent`
+      it("returns the specified number of items", async () => {
+        const result = await mock.execute(authorQuery, { id: authorId });
+
+        expect(
+          result,
+          "to inspect as snapshot",
+          expect.unindent`
           {
             data: {
               author: {
@@ -215,31 +216,31 @@ describe("graphql-fakester", () => {
             }
           }
         `
-      );
-    });
-  });
-
-  describe("when executing a mutation", () => {
-    beforeEach(async () => {
-      mock = new GraphQLMock({
-        typeDefs,
-        mocks: {
-          Mutation: {
-            upvotePost: {
-              votes: 42,
-            },
-          },
-        },
+        );
       });
     });
 
-    it("allows mocking the result", async () => {
-      const result = await mock.execute(upvotePostMutation, { postId });
+    describe("when executing a mutation", () => {
+      beforeEach(async () => {
+        mock = new GraphQLMock({
+          typeDefs,
+          mocks: {
+            Mutation: {
+              upvotePost: {
+                votes: 42,
+              },
+            },
+          },
+        });
+      });
 
-      expect(
-        result,
-        "to inspect as snapshot",
-        expect.unindent`
+      it("allows mocking the result", async () => {
+        const result = await mock.execute(upvotePostMutation, { postId });
+
+        expect(
+          result,
+          "to inspect as snapshot",
+          expect.unindent`
           {
             data: {
               upvotePost: {
@@ -250,44 +251,44 @@ describe("graphql-fakester", () => {
             }
           }
         `
-      );
+        );
+      });
     });
-  });
 
-  it("allows to create a custom configured mock using inheritance", async () => {
-    class MyMock extends GraphQLMock {
-      constructor(mocks) {
-        super({
-          typeDefs,
-          mocks: [
-            {
-              Author: (chance) => ({
-                email: chance.email(),
-                posts: list({ length: 3 }),
-              }),
-              Post: (chance) => ({
-                title: `title-${chance.word()}`,
-              }),
-            },
-            mocks,
-          ],
-        });
+    it("allows to create a custom configured mock using inheritance", async () => {
+      class MyMock extends GraphQLMock {
+        constructor(mocks) {
+          super({
+            typeDefs,
+            mocks: [
+              {
+                Author: (chance) => ({
+                  email: chance.email(),
+                  posts: list({ length: 3 }),
+                }),
+                Post: (chance) => ({
+                  title: `title-${chance.word()}`,
+                }),
+              },
+              mocks,
+            ],
+          });
+        }
       }
-    }
 
-    const mock = new MyMock({
-      Author: (chance) => ({
-        firstName: "Jane",
-        lastName: "Doe",
-      }),
-    });
+      const mock = new MyMock({
+        Author: (chance) => ({
+          firstName: "Jane",
+          lastName: "Doe",
+        }),
+      });
 
-    const result = await mock.execute(authorQuery, { id: authorId });
+      const result = await mock.execute(authorQuery, { id: authorId });
 
-    expect(
-      result,
-      "to inspect as snapshot",
-      expect.unindent`
+      expect(
+        result,
+        "to inspect as snapshot",
+        expect.unindent`
         {
           data: {
             author: {
@@ -304,6 +305,7 @@ describe("graphql-fakester", () => {
           }
         }
       `
-    );
+      );
+    });
   });
 });
