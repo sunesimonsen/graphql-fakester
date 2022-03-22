@@ -1,3 +1,7 @@
+### v0.5.0 (2022-03-22)
+
+- [#14](https://github.com/sunesimonsen/graphql-fakester/pull/14) \(Breaking\) Allow specifying resolvers and rename overrides to mocks ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.4.0 (2022-03-22)
 
 #### Pull requests
