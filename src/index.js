@@ -23,6 +23,7 @@ class GraphQLMock {
       resolverValidationOptions: { requireResolversForResolveType: false },
     });
 
+    this._nextKey = 0;
     this._cache = new Map();
     this._chance = new Chance(seed);
 
@@ -99,7 +100,11 @@ class GraphQLMock {
     }
   }
 
-  getType(typeName, key, { depth = 2, likelihood = 80 } = {}) {
+  getType(
+    typeName,
+    key = this._nextKey++,
+    { depth = 2, likelihood = 80 } = {}
+  ) {
     const cacheKey = `${typeName}:${key}:${depth}:${likelihood}`;
 
     if (this._cache.has(cacheKey)) {
