@@ -158,21 +158,21 @@ describe("graphql-fakester", () => {
           result,
           "to inspect as snapshot",
           expect.unindent`
-        {
-          data: {
-            author: {
-              id: '6',
-              firstName: 'herubju',
-              lastName: 'nocpebe',
-              email: 'ketis@ziluwi.cw',
-              posts: [
-                { id: '4945079106011136', title: 'kelecse' },
-                { id: '6325555974635520', title: 'jeminode' }
-              ]
+          {
+            data: {
+              author: {
+                id: '6',
+                firstName: 'herubju',
+                lastName: 'nocpebe',
+                email: 'ketis@ziluwi.cw',
+                posts: [
+                  { id: '4945079106011136', title: 'kelecse' },
+                  { id: '6325555974635520', title: 'jeminode' }
+                ]
+              }
             }
           }
-        }
-      `
+        `
         );
       });
     });
