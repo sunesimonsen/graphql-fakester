@@ -186,6 +186,7 @@ You can ask for a type by name the following way:
 
 ```js
 let author = mock.getType("Author", 42);
+
 expect(author, "to satisfy", {
   id: 42,
   firstName: "herubju",
@@ -211,6 +212,7 @@ You can also control the recursion depth using the `depth` option. Default depth
 
 ```js
 author = mock.getType("Author", 42, { depth: 1, likelihood: 30 });
+
 expect(author, "to equal snapshot", {
   __typename: "Author",
   id: 42,
