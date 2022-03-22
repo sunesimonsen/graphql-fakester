@@ -42,6 +42,7 @@ const authorNameQuery = `
 const authorQuery = `
   query authorFirstName($id: ID!) {
     author(id: $id) {
+      id
       firstName
       lastName
       email
@@ -92,7 +93,7 @@ describe("graphql-fakester", () => {
     beforeEach(async () => {
       mock = new GraphQLMock({
         typeDefs,
-        overrides: {
+        mocks: {
           Author: (chance, root, args, context, info) => ({
             firstName: chance.name(),
           }),
@@ -115,7 +116,7 @@ describe("graphql-fakester", () => {
     beforeEach(async () => {
       mock = new GraphQLMock({
         typeDefs,
-        overrides: {
+        mocks: {
           Author: { firstName: "Jane", lastName: "Doe" },
         },
       });
@@ -132,11 +133,54 @@ describe("graphql-fakester", () => {
     });
   });
 
+  describe("when override the default resolvers", () => {
+    beforeEach(async () => {
+      mock = new GraphQLMock({
+        typeDefs,
+        mocks: {
+          Author: (chance) => ({
+            email: chance.email(),
+          }),
+        },
+        resolvers: (store) => ({
+          Query: {
+            author: (root, { id }) => store.get("Author", id),
+          },
+        }),
+      });
+    });
+
+    it("uses the resolvers", async () => {
+      const result = await mock.execute(authorQuery, { id: authorId });
+
+      expect(
+        result,
+        "to inspect as snapshot",
+        expect.unindent`
+        {
+          data: {
+            author: {
+              id: '6',
+              firstName: 'herubju',
+              lastName: 'nocpebe',
+              email: 'ketis@ziluwi.cw',
+              posts: [
+                { id: '4945079106011136', title: 'kelecse' },
+                { id: '6325555974635520', title: 'jeminode' }
+              ]
+            }
+          }
+        }
+      `
+      );
+    });
+  });
+
   describe("when mocking a list resolver", () => {
     beforeEach(async () => {
       mock = new GraphQLMock({
         typeDefs,
-        overrides: {
+        mocks: {
           Author: (chance) => ({
             email: chance.email(),
             posts: list({ length: 3 }),
@@ -158,6 +202,7 @@ describe("graphql-fakester", () => {
           {
             data: {
               author: {
+                id: '4945079106011136',
                 firstName: 'herubju',
                 lastName: 'nocpebe',
                 email: 'ketis@ziluwi.cw',
@@ -178,7 +223,7 @@ describe("graphql-fakester", () => {
     beforeEach(async () => {
       mock = new GraphQLMock({
         typeDefs,
-        overrides: {
+        mocks: {
           Mutation: {
             upvotePost: {
               votes: 42,
@@ -211,10 +256,10 @@ describe("graphql-fakester", () => {
 
   it("allows to create a custom configured mock using inheritance", async () => {
     class MyMock extends GraphQLMock {
-      constructor(overrides) {
+      constructor(mocks) {
         super({
           typeDefs,
-          overrides: [
+          mocks: [
             {
               Author: (chance) => ({
                 email: chance.email(),
@@ -224,7 +269,7 @@ describe("graphql-fakester", () => {
                 title: `title-${chance.word()}`,
               }),
             },
-            overrides,
+            mocks,
           ],
         });
       }
@@ -243,21 +288,22 @@ describe("graphql-fakester", () => {
       result,
       "to inspect as snapshot",
       expect.unindent`
-          {
-            data: {
-              author: {
-                firstName: 'Jane',
-                lastName: 'Doe',
-                email: 'ketis@ziluwi.cw',
-                posts: [
-                  { id: '6325555974635520', title: 'title-ha' },
-                  { id: '308014672248832', title: 'title-felsuh' },
-                  { id: '1702188611010560', title: 'title-rizede' }
-                ]
-              }
+        {
+          data: {
+            author: {
+              id: '4945079106011136',
+              firstName: 'Jane',
+              lastName: 'Doe',
+              email: 'ketis@ziluwi.cw',
+              posts: [
+                { id: '6325555974635520', title: 'title-ha' },
+                { id: '308014672248832', title: 'title-felsuh' },
+                { id: '1702188611010560', title: 'title-rizede' }
+              ]
             }
           }
-        `
+        }
+      `
     );
   });
 });

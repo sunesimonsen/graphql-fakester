@@ -62,9 +62,10 @@ let result = await moch.execute(authorQuery, { id: "42" });
 expect(result, "to satisfy", {
   data: {
     author: {
-      firstName: 'herubju',
-      lastName: 'nocpebe'
-      email: 'kelecse',
+      id: "4945079106011136",
+      firstName: "herubju",
+      lastName: "nocpebe",
+      email: "kelecse",
       posts: [
         { id: "1828976169320448", title: "jeminode" },
         { id: "4158848130613248", title: "orimipon" },
@@ -74,16 +75,16 @@ expect(result, "to satisfy", {
 });
 ```
 
-## Overriding the default resolvers
+## Overriding the default mocks
 
 This project uses [@graphql-tools/mock](https://www.graphql-tools.com/docs/mocking) as its basis and can be used in a very similar way.
 
-If you just want to hardcode the overrides, you can do that the following way:
+If you just want to hardcode an override, you can do that the following way:
 
 ```js
 mock = new GraphQLMock({
   typeDefs,
-  overrides: {
+  mocks: {
     Author: { firstName: "Jane", lastName: "Doe" },
   },
 });
@@ -93,6 +94,7 @@ result = await moch.execute(authorQuery, { id: "42" });
 expect(result, "to satisfy", {
   data: {
     author: {
+      id: "4945079106011136",
       firstName: "Jane",
       lastName: "Doe",
       email: "kelecse",
@@ -111,14 +113,14 @@ The each of the top-level override function will be given a [chancejs](https://w
 
 See the [mocking documentation](https://www.graphql-tools.com/docs/mocking) for more details.
 
-## Controlling a collection resolver
+## Mocking a list resolver
 
 ```js
-import { list } from "graphql-fakester"
+import { list } from "graphql-fakester";
 
 mock = new GraphQLMock({
   typeDefs,
-  overrides: {
+  mocks: {
     Author: {
       firstName: "Jane",
       lastName: "Doe",
@@ -132,8 +134,9 @@ result = await moch.execute(authorQuery, { id: "42" });
 expect(result, "to satisfy", {
   data: {
     author: {
-      firstName: 'herubju',
-      lastName: 'nocpebe'
+      id: "4945079106011136",
+      firstName: "herubju",
+      lastName: "nocpebe",
       email: "kelecse",
       posts: [
         { id: "1828976169320448", title: "jeminode" },
@@ -150,7 +153,7 @@ It is also possible to use `min` and `max` instead of the `length`.
 ```js
 mock = new GraphQLMock({
   typeDefs,
-  overrides: {
+  mocks: {
     Author: {
       posts: list({ min: 1, max: 5 }),
     },
@@ -162,8 +165,9 @@ result = await mock.execute(authorQuery, { id: "42" });
 expect(result, "to satisfy", {
   data: {
     author: {
-      firstName: 'herubju',
-      lastName: 'nocpebe'
+      id: j4945079106011136j,
+      firstName: "herubju",
+      lastName: "nocpebe",
       email: "kelecse",
       posts: [
         { id: "1828976169320448", title: "jeminode" },
@@ -176,14 +180,52 @@ expect(result, "to satisfy", {
 
 Notice `min` defaults to 0 and `max` defaults to 10, so can just call the list function without any arguments, or only send in either `min` or `max`.
 
+## Providing custom resolvers
+
+It is possible to create a custom resolver that can use the mock store to retrieve or update the stored mocks.
+
+This can be useful for mocking resolvers where the arguments are important.
+
+Here we want to make sure that when we resolve an author, we get the id we asked for:
+
+```js
+mock = new GraphQLMock({
+  typeDefs,
+  resolvers: (store) => ({
+    Query: {
+      author: (root, { id }) => store.get("Author", id),
+    },
+  }),
+});
+
+result = await mock.execute(authorQuery, { id: "42" });
+
+expect(result, "to satisfy", {
+  data: {
+    author: {
+      id: "42",
+      firstName: "herubju",
+      lastName: "nocpebe",
+      email: "kelecse",
+      posts: [
+        { id: "1828976169320448", title: "jeminode" },
+        { id: "4158848130613248", title: "orimipon" },
+      ],
+    },
+  },
+});
+```
+
+See [Handling \*byId fields](https://www.graphql-tools.com/docs/mocking#handling-byid-fields) for more information.
+
 ## Creating a preconfigured mock
 
 ```js
 class MyMock extends GraphQLMock {
-  constructor(overrides) {
+  constructor(mocks) {
     super({
       typeDefs,
-      overrides: [
+      mocks: [
         {
           Author: (chance) => ({
             email: chance.email(),
@@ -193,7 +235,7 @@ class MyMock extends GraphQLMock {
             title: `title-${chance.word()}`,
           }),
         },
-        overrides,
+        mocks,
       ],
     });
   }
