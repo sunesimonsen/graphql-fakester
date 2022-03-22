@@ -1,3 +1,14 @@
+### v0.8.0 (2022-03-22)
+
+#### Pull requests
+
+- [#17](https://github.com/sunesimonsen/graphql-fakester/pull/17) Make the key argument optional ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+- [#16](https://github.com/sunesimonsen/graphql-fakester/pull/16) Simplify list mock to only take the length \(breaking\) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
+#### Commits to main
+
+- [Fixed spacing the readme](https://github.com/sunesimonsen/graphql-fakester/commit/9622315c5cd88ec89d4cc0ef6dade0dbfe3b4352) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.7.0 (2022-03-22)
 
 #### Pull requests
