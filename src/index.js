@@ -1,6 +1,6 @@
 const { makeExecutableSchema } = require("@graphql-tools/schema");
 const { addMocksToSchema, MockList } = require("@graphql-tools/mock");
-const { graphql } = require("graphql");
+const { graphql, print } = require("graphql");
 const merge = require("lodash/merge");
 const mergeWith = require("lodash/mergeWith");
 const Chance = require("chance");
@@ -84,7 +84,7 @@ class GraphQLMock {
   execute(query, variables) {
     return graphql({
       schema: this.schema,
-      source: query,
+      source: typeof query === "string" ? query : print(query),
       variableValues: variables,
     });
   }
