@@ -1,3 +1,13 @@
+### v0.6.0 (2022-03-22)
+
+#### Pull requests
+
+- [#15](https://github.com/sunesimonsen/graphql-fakester/pull/15) Print queries that isn't strings ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
+#### Commits to main
+
+- [Update package-lock](https://github.com/sunesimonsen/graphql-fakester/commit/b8bca0b90415f471f7a0a3101319c5cb23599bf2) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.5.0 (2022-03-22)
 
 - [#14](https://github.com/sunesimonsen/graphql-fakester/pull/14) \(Breaking\) Allow specifying resolvers and rename overrides to mocks ([Sune Simonsen](mailto:sune@we-knowhow.dk))
