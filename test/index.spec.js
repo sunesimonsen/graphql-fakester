@@ -376,11 +376,11 @@ describe("graphql-fakester", () => {
     });
 
     it("returns a stubbed version of the given type", () => {
-      const author = mock.getType("Author", 42);
+      const author = mock.getType("Author");
 
       expect(author, "to equal snapshot", {
         __typename: "Author",
-        id: 42,
+        id: 0,
         firstName: "herubju",
         lastName: "nocpebe",
         email: "ketis@ziluwi.cw",
@@ -397,6 +397,33 @@ describe("graphql-fakester", () => {
           },
           votes: 14,
         },
+      });
+    });
+
+    describe("when given a key", () => {
+      it("returns a stubbed version of the given type with the id set to the key", () => {
+        const author = mock.getType("Author", 42);
+
+        expect(author, "to equal snapshot", {
+          __typename: "Author",
+          id: 42,
+          firstName: "herubju",
+          lastName: "nocpebe",
+          email: "ketis@ziluwi.cw",
+          favoritePost: {
+            __typename: "Post",
+            id: "1702188611010560",
+            title: "kelecse",
+            author: {
+              __typename: "Author",
+              id: "1828976169320448",
+              firstName: "jeminode",
+              lastName: "orimipon",
+              email: "dabinalut@wepmevagi.gb",
+            },
+            votes: 14,
+          },
+        });
       });
     });
 
