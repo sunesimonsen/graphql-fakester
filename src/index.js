@@ -16,7 +16,7 @@ const list =
   };
 
 class GraphQLMock {
-  constructor({ typeDefs, overrides, seed = 666 }) {
+  constructor({ typeDefs, mocks, resolvers, seed = 666 }) {
     const schema = makeExecutableSchema({
       typeDefs,
       resolverValidationOptions: { requireResolversForResolveType: false },
@@ -34,11 +34,12 @@ class GraphQLMock {
 
     const mockArray = [
       defaultMocks,
-      ...(Array.isArray(overrides) ? overrides : [overrides]).filter(Boolean),
+      ...(Array.isArray(mocks) ? mocks : [mocks]).filter(Boolean),
     ];
 
     this.schema = addMocksToSchema({
       schema,
+      resolvers,
       mocks: mergeWith(
         ...mockArray.map((mocks) => {
           Object.keys(mocks).forEach((key) => {
