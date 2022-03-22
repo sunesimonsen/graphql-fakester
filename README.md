@@ -124,7 +124,7 @@ mock = new GraphQLMock({
     Author: {
       firstName: "Jane",
       lastName: "Doe",
-      posts: list({ length: 3 }),
+      posts: list(3),
     },
   },
 });
@@ -148,15 +148,15 @@ expect(result, "to satisfy", {
 });
 ```
 
-It is also possible to use `min` and `max` instead of the `length`.
+You can use [chance](https://chancejs.com/) to create a variable length list this way.
 
 ```js
 mock = new GraphQLMock({
   typeDefs,
   mocks: {
-    Author: {
-      posts: list({ min: 1, max: 5 }),
-    },
+    Author: chance => ({
+      posts: list(chance.integer{ min: 1, max: 5 }),
+    }),
   },
 });
 
@@ -270,7 +270,7 @@ class MyMock extends GraphQLMock {
         {
           Author: (chance) => ({
             email: chance.email(),
-            posts: list({ length: 3 }),
+            posts: list(3),
           }),
           Post: (chance) => ({
             title: `title-${chance.word()}`,
