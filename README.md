@@ -180,6 +180,45 @@ expect(result, "to satisfy", {
 
 Notice `min` defaults to 0 and `max` defaults to 10, so can just call the list function without any arguments, or only send in either `min` or `max`.
 
+## Generating stub types
+
+You can ask for a type by name the following way:
+
+```js
+let author = mock.getType("Author", 42);
+expect(author, "to satisfy", {
+  id: 42,
+  firstName: "herubju",
+  lastName: "nocpebe",
+  email: "ketis@ziluwi.cw",
+  favoritePost: {
+    id: "4945079106011136",
+    title: "kelecse",
+    author: {
+      id: "6325555974635520",
+      firstName: "jeminode",
+      lastName: "orimipon",
+      email: "dabinalut@wepmevagi.gb",
+    },
+    votes: 13,
+  },
+});
+```
+
+You can control the likelihood of optional fields being included using the `likelihood` options that takes a percentage. Default likelihood is `80`.
+
+You can also control the recursion depth using the `depth` option. Default depth is 2.
+
+```js
+author = mock.getType("Author", 42, { depth: 1, likelihood: 30 });
+expect(author, "to equal snapshot", {
+  __typename: "Author",
+  id: 42,
+  firstName: "herubju",
+  lastName: "nocpebe",
+});
+```
+
 ## Providing custom resolvers
 
 It is possible to create a custom resolver that can use the mock store to retrieve or update the stored mocks.
