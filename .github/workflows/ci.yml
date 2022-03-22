@@ -22,5 +22,5 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm install
     - run: npm run lint
-      if: ${{ matrix.node-version == 14 }}
+      if: ${{ matrix.node-version == 16 }}
     - run: npm test
