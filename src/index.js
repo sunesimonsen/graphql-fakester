@@ -11,15 +11,7 @@ const merge = require("lodash/merge");
 const mergeWith = require("lodash/mergeWith");
 const Chance = require("chance");
 
-const list =
-  ({ min = 0, max = 10, length } = {}) =>
-  (chance) => {
-    if (typeof length !== "number") {
-      length = chance.natural({ min, max });
-    }
-
-    return new MockList(length);
-  };
+const list = (length) => new MockList(length);
 
 const isRef = (value) => value && value.$ref;
 const isRefArray = (value) => Array.isArray(value) && value.some(isRef);

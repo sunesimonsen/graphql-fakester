@@ -185,7 +185,7 @@ describe("graphql-fakester", () => {
           mocks: {
             Author: (chance) => ({
               email: chance.email(),
-              posts: list({ length: 3 }),
+              posts: list(3),
             }),
             Post: (chance) => ({
               title: `title-${chance.word()}`,
@@ -212,6 +212,45 @@ describe("graphql-fakester", () => {
                   { id: '6325555974635520', title: 'title-ha' },
                   { id: '308014672248832', title: 'title-felsuh' },
                   { id: '1702188611010560', title: 'title-rizede' }
+                ]
+              }
+            }
+          }
+        `
+        );
+      });
+    });
+
+    describe("when mocking a list resolver to be variable length", () => {
+      beforeEach(async () => {
+        mock = new GraphQLMock({
+          typeDefs,
+          mocks: {
+            Author: (chance) => ({
+              posts: list(chance.integer({ min: 1, max: 5 })),
+            }),
+          },
+        });
+      });
+
+      it("returns the specified number of items", async () => {
+        const result = await mock.execute(authorQuery, { id: authorId });
+
+        expect(
+          result,
+          "to inspect as snapshot",
+          expect.unindent`
+          {
+            data: {
+              author: {
+                id: '4945079106011136',
+                firstName: 'herubju',
+                lastName: 'nocpebe',
+                email: 'kelecse',
+                posts: [
+                  { id: '6325555974635520', title: 'jeminode' },
+                  { id: '308014672248832', title: 'orimipon' },
+                  { id: '1702188611010560', title: 'rurzilru' }
                 ]
               }
             }
@@ -265,7 +304,7 @@ describe("graphql-fakester", () => {
               {
                 Author: (chance) => ({
                   email: chance.email(),
-                  posts: list({ length: 3 }),
+                  posts: list(3),
                 }),
                 Post: (chance) => ({
                   title: `title-${chance.word()}`,
@@ -317,7 +356,7 @@ describe("graphql-fakester", () => {
         mocks: {
           Author: (chance) => ({
             email: chance.email(),
-            posts: list({ length: 3 }),
+            posts: list(3),
           }),
           Post: (chance) => ({
             votes: chance.natural({ max: 100 }),
@@ -347,16 +386,16 @@ describe("graphql-fakester", () => {
         email: "ketis@ziluwi.cw",
         favoritePost: {
           __typename: "Post",
-          id: "4945079106011136",
+          id: "1702188611010560",
           title: "kelecse",
           author: {
             __typename: "Author",
-            id: "6325555974635520",
+            id: "1828976169320448",
             firstName: "jeminode",
             lastName: "orimipon",
             email: "dabinalut@wepmevagi.gb",
           },
-          votes: 13,
+          votes: 14,
         },
       });
     });
@@ -411,66 +450,66 @@ describe("graphql-fakester", () => {
           email: "ketis@ziluwi.cw",
           favoritePost: {
             __typename: "Post",
-            id: "4945079106011136",
+            id: "1702188611010560",
             title: "kelecse",
             author: {
               __typename: "Author",
-              id: "6325555974635520",
+              id: "1828976169320448",
               firstName: "jeminode",
               lastName: "orimipon",
               email: "dabinalut@wepmevagi.gb",
               posts: [
                 {
                   __typename: "Post",
-                  id: "308014672248832",
+                  id: "4158848130613248",
                   title: "rurzilru",
                   author: {
                     __typename: "Author",
-                    id: "4158848130613248",
+                    id: "5223687156400128",
                     firstName: "lufzipav",
                     lastName: "bujledol",
-                    email: "bihac@su.cr",
+                    email: "jigibu@wurokfiz.ac",
                   },
-                  votes: 14,
+                  votes: 13,
                 },
                 {
                   __typename: "Post",
-                  id: "1702188611010560",
+                  id: "4620302535360512",
                   title: "jonubzov",
                   author: {
                     __typename: "Author",
-                    id: "8977495304962048",
+                    id: "494041963692032",
                     firstName: "ocomohi",
                     lastName: "widdivew",
-                    email: "zem@fad.be",
+                    email: "lozki@mebjo.er",
                   },
-                  votes: 61,
+                  votes: 30,
                 },
                 {
                   __typename: "Post",
-                  id: "1828976169320448",
+                  id: "6201557219540992",
                   title: "zapugjeg",
                   author: {
                     __typename: "Author",
-                    id: "3264289079033856",
+                    id: "4255354269466624",
                     firstName: "jatafose",
                     lastName: "gorogef",
-                    email: "tohuh@vi.bh",
+                    email: "genowofe@talsahepi.cv",
                   },
-                  votes: 60,
+                  votes: 47,
                 },
               ],
               favoritePost: {
                 __typename: "Post",
-                id: "8817102102200320",
+                id: "8364009338175488",
                 title: "babucus",
                 author: {
                   __typename: "Author",
-                  id: "4255354269466624",
+                  id: "2715279572336640",
                   firstName: "dolira",
                   lastName: "kejipure",
                 },
-                votes: 26,
+                votes: 50,
               },
             },
           },
@@ -526,9 +565,9 @@ describe("graphql-fakester", () => {
           ],
           favoritePost: {
             __typename: "Post",
-            id: "4620302535360512",
+            id: "1834610061213696",
             title: "rurzilru",
-            votes: 73,
+            votes: 100,
           },
         });
       });
@@ -554,7 +593,7 @@ describe("graphql-fakester", () => {
                 id: "1702188611010560",
                 firstName: "jeminode",
                 lastName: "orimipon",
-                email: "dabinalut@wepmevagi.gb",
+                email: "saboela@hek.cg",
               },
               votes: 13,
             },
@@ -567,7 +606,7 @@ describe("graphql-fakester", () => {
                 id: "5223687156400128",
                 firstName: "lufzipav",
                 lastName: "bujledol",
-                email: "dowwipwo@dib.ma",
+                email: "jigibu@wurokfiz.ac",
               },
               votes: 27,
             },
@@ -580,7 +619,7 @@ describe("graphql-fakester", () => {
                 id: "494041963692032",
                 firstName: "ocomohi",
                 lastName: "widdivew",
-                email: "be@tesih.bn",
+                email: "lozki@mebjo.er",
               },
               votes: 25,
             },
@@ -594,7 +633,7 @@ describe("graphql-fakester", () => {
               id: "2941350620168192",
               firstName: "jatafose",
               lastName: "gorogef",
-              email: "asmedum@vudsufsa.ga",
+              email: "hoc@ripdetewe.gi",
             },
             votes: 26,
           },
