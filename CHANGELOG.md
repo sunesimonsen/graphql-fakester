@@ -1,3 +1,14 @@
+### v0.4.0 (2022-03-22)
+
+#### Pull requests
+
+- [#13](https://github.com/sunesimonsen/graphql-fakester/pull/13) Make graphql a peer dependency ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+- [#5](https://github.com/sunesimonsen/graphql-fakester/pull/5) Bump eslint-config-prettier from 8.4.0 to 8.5.0 ([dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com))
+
+#### Commits to main
+
+- [Update README.md](https://github.com/sunesimonsen/graphql-fakester/commit/acca7772465769d75d22c7f2d3b3f3414a4bcbf8) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.3.0 (2022-03-01)
 
 - [Document the list mock](https://github.com/sunesimonsen/graphql-fakester/commit/c974d5f3b695c6985e0079bbca37abc223280c70) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
