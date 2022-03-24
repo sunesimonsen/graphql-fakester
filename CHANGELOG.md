@@ -1,3 +1,7 @@
+### v0.10.0 (2022-03-24)
+
+- [#24](https://github.com/sunesimonsen/graphql-fakester/pull/24) Provide cycle and values utilities ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.9.0 (2022-03-24)
 
 - [#23](https://github.com/sunesimonsen/graphql-fakester/pull/23) Provide the resolver sequence as the second argument for a mock ([Sune Simonsen](mailto:sune@we-knowhow.dk))
