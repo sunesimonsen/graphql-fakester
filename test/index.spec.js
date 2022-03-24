@@ -92,24 +92,59 @@ describe("graphql-fakester", () => {
     });
 
     describe("when mocking a field on an object", () => {
-      beforeEach(async () => {
+      it("the mocked field will be used", async () => {
         mock = new GraphQLMock({
           typeDefs,
           mocks: {
-            Author: (chance, root, args, context, info) => ({
+            Author: (chance) => ({
               firstName: chance.name(),
             }),
           },
         });
-      });
 
-      it("the mocked field will be used", async () => {
         const result = await mock.execute(authorNameQuery, { id: authorId });
 
         expect(
           result,
           "to inspect as snapshot",
           "{ data: { author: { firstName: 'Max Spencer', lastName: 'herubju' } } }"
+        );
+      });
+
+      it("supply a second argument that is a sequence number", async () => {
+        mock = new GraphQLMock({
+          typeDefs,
+          mocks: {
+            Author: { posts: list(5) },
+            Post: (chance, seq) =>
+              seq === 3 ? { title: "My very special title" } : {},
+          },
+        });
+
+        const result = await mock.execute(authorQuery, { id: authorId });
+
+        expect(
+          result,
+          "to inspect as snapshot",
+          expect.unindent`
+            {
+              data: {
+                author: {
+                  id: '4945079106011136',
+                  firstName: 'herubju',
+                  lastName: 'nocpebe',
+                  email: 'kelecse',
+                  posts: [
+                    { id: '6325555974635520', title: 'jeminode' },
+                    { id: '308014672248832', title: 'orimipon' },
+                    { id: '1702188611010560', title: 'rurzilru' },
+                    { id: '1828976169320448', title: 'My very special title' },
+                    { id: '4158848130613248', title: 'lufzipav' }
+                  ]
+                }
+              }
+            }
+          `
         );
       });
     });
