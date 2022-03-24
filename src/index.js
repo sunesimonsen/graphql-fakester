@@ -13,6 +13,22 @@ const Chance = require("chance");
 
 const list = (length) => new MockList(length);
 
+const values =
+  (...mocks) =>
+  (chance, seq) => {
+    const mock = mocks[Math.min(seq, mocks.length - 1)];
+
+    return typeof mock === "function" ? mock(chance, seq) : mock;
+  };
+
+const cycle =
+  (...mocks) =>
+  (chance, seq) => {
+    const mock = mocks[seq % mocks.length];
+
+    return typeof mock === "function" ? mock(chance, seq) : mock;
+  };
+
 const isRef = (value) => value && value.$ref;
 const isRefArray = (value) => Array.isArray(value) && value.some(isRef);
 
@@ -164,4 +180,6 @@ class GraphQLMock {
 module.exports = {
   GraphQLMock,
   list,
+  cycle,
+  values,
 };

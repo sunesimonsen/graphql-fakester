@@ -2,7 +2,7 @@ const expect = require("unexpected")
   .clone()
   .use(require("unexpected-snapshot"));
 
-const { GraphQLMock, list } = require("../src/index.js");
+const { GraphQLMock, list, cycle, values } = require("../src/index.js");
 
 const typeDefs = `
   type Author {
@@ -715,5 +715,95 @@ describe("graphql-fakester", () => {
         });
       });
     });
+  });
+});
+
+describe("cycle", () => {
+  let mock;
+
+  beforeEach(async () => {
+    mock = new GraphQLMock({
+      typeDefs,
+      mocks: {
+        Author: { posts: list(5) },
+        Post: cycle(
+          { title: "foo" },
+          (chance) => ({ title: `bar-${chance.word()}` }),
+          { title: "baz" }
+        ),
+      },
+    });
+  });
+
+  it("cycles the given mocks", async () => {
+    const result = await mock.execute(authorQuery, { id: authorId });
+
+    expect(
+      result,
+      "to inspect as snapshot",
+      expect.unindent`
+        {
+          data: {
+            author: {
+              id: '4945079106011136',
+              firstName: 'herubju',
+              lastName: 'nocpebe',
+              email: 'kelecse',
+              posts: [
+                { id: '6325555974635520', title: 'foo' },
+                { id: '308014672248832', title: 'bar-ketis' },
+                { id: '1702188611010560', title: 'baz' },
+                { id: '1828976169320448', title: 'foo' },
+                { id: '4158848130613248', title: 'bar-ziluwi' }
+              ]
+            }
+          }
+        }
+      `
+    );
+  });
+});
+
+describe("values", () => {
+  let mock;
+
+  beforeEach(async () => {
+    mock = new GraphQLMock({
+      typeDefs,
+      mocks: {
+        Author: { posts: list(5) },
+        Post: values({ title: "foo" }, { title: "bar" }, (chance) => ({
+          title: `baz-${chance.word()}`,
+        })),
+      },
+    });
+  });
+
+  it("uses the given mocks in order", async () => {
+    const result = await mock.execute(authorQuery, { id: authorId });
+
+    expect(
+      result,
+      "to inspect as snapshot",
+      expect.unindent`
+        {
+          data: {
+            author: {
+              id: '4945079106011136',
+              firstName: 'herubju',
+              lastName: 'nocpebe',
+              email: 'kelecse',
+              posts: [
+                { id: '6325555974635520', title: 'foo' },
+                { id: '308014672248832', title: 'bar' },
+                { id: '1702188611010560', title: 'baz-ketis' },
+                { id: '1828976169320448', title: 'baz-ziluwi' },
+                { id: '4158848130613248', title: 'baz-zev' }
+              ]
+            }
+          }
+        }
+      `
+    );
   });
 });

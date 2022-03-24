@@ -196,29 +196,103 @@ mock = new GraphQLMock({
 
 result = await mock.execute(authorQuery, { id: authorId });
 
-expect(
-  result,
-  "to inspect as snapshot",
-  expect.unindent`
-    {
-      data: {
-        author: {
-          id: '4945079106011136',
-          firstName: 'herubju',
-          lastName: 'nocpebe',
-          email: 'kelecse',
-          posts: [
-            { id: '6325555974635520', title: 'jeminode' },
-            { id: '308014672248832', title: 'orimipon' },
-            { id: '1702188611010560', title: 'rurzilru' },
-            { id: '1828976169320448', title: 'My very special title' },
-            { id: '4158848130613248', title: 'lufzipav' }
-          ]
-        }
-      }
-    }
-  `
-);
+expect(result, "to equal", {
+  data: {
+    author: {
+      id: "4945079106011136",
+      firstName: "herubju",
+      lastName: "nocpebe",
+      email: "kelecse",
+      posts: [
+        { id: "6325555974635520", title: "jeminode" },
+        { id: "308014672248832", title: "orimipon" },
+        { id: "1702188611010560", title: "rurzilru" },
+        { id: "1828976169320448", title: "My very special title" },
+        { id: "4158848130613248", title: "lufzipav" },
+      ],
+    },
+  },
+});
+```
+
+## Cycling through mocks
+
+Sometimes it is useful to provide a cycle through a finite list of mocks. You can use the `cycle` utility for this purpose.
+
+```js
+import { cycle } from "graphql-fakester";
+
+mock = new GraphQLMock({
+  typeDefs,
+  mocks: {
+    Author: { posts: list(5) },
+    Post: cycle(
+      { title: "foo" },
+      (chance) => ({ title: `bar-${chance.word()}` }),
+      { title: "baz" }
+    ),
+  },
+});
+
+result = await mock.execute(authorQuery, { id: authorId });
+
+expect(result, "to equal", {
+  data: {
+    author: {
+      id: "4945079106011136",
+      firstName: "herubju",
+      lastName: "nocpebe",
+      email: "kelecse",
+      posts: [
+        { id: "6325555974635520", title: "foo" },
+        { id: "308014672248832", title: "bar-ketis" },
+        { id: "1702188611010560", title: "baz" },
+        { id: "1828976169320448", title: "foo" },
+        { id: "4158848130613248", title: "bar-ziluwi" },
+      ],
+    },
+  },
+});
+```
+
+## Using a specific list of mocks
+
+In other cases you might want to specify the first `n` mocks and just repeat the last one, you can do that with the `values` utility.
+
+Notice that the last mock will be repeated when all the initial mocks has been used, so it is a good idea to put some randomness into the final mock.
+
+```js
+import { values } from "graphql-fakester";
+
+mock = new GraphQLMock({
+  typeDefs,
+  mocks: {
+    Author: { posts: list(5) },
+    Post: values({ title: "foo" }, { title: "bar" }, (chance) => ({
+      title: `baz-${chance.word()}`,
+    })),
+  },
+});
+
+result = await mock.execute(authorQuery, { id: authorId });
+
+expect(result, "to equal", {
+  data: {
+    author: {
+      id: "4945079106011136",
+      firstName: "herubju",
+      lastName: "nocpebe",
+      email: "kelecse",
+      posts: [
+        { id: "6325555974635520", title: "foo" },
+        { id: "308014672248832", title: "bar" },
+        { id: "1702188611010560", title: "baz-ketis" },
+        { id: "1828976169320448", title: "baz-ziluwi" },
+        { id: "4158848130613248", title: "baz-zev" },
+      ],
+    },
+  },
+});
 ```
 
 ## Generating stub types
