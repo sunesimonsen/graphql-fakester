@@ -47,11 +47,11 @@ class GraphQLMock {
 
           if (typeof mock === "function") {
             const chance = new Chance(this._chance.natural());
+            let seq = 0;
 
-            mocks[key] = (root, args, context, info) =>
-              mock(chance, root, args, context, info);
+            mocks[key] = () => mock(chance, seq++);
           } else {
-            mocks[key] = (root, args, context, info) => mock;
+            mocks[key] = () => mock;
           }
         });
 

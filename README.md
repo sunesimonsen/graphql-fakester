@@ -180,6 +180,47 @@ expect(result, "to satisfy", {
 
 Notice `min` defaults to 0 and `max` defaults to 10, so can just call the list function without any arguments, or only send in either `min` or `max`.
 
+## Overriding a special list entry
+
+You can get a sequence number corresponding to the number of time a mock has been resolved. This can be used to respond specially for a certain index in a list:
+
+```js
+mock = new GraphQLMock({
+  typeDefs,
+  mocks: {
+    Author: { posts: list(5) },
+    Post: (chance, seq) =>
+      seq === 3 ? { title: "My very special title" } : {},
+  },
+});
+
+result = await mock.execute(authorQuery, { id: authorId });
+
+expect(
+  result,
+  "to inspect as snapshot",
+  expect.unindent`
+    {
+      data: {
+        author: {
+          id: '4945079106011136',
+          firstName: 'herubju',
+          lastName: 'nocpebe',
+          email: 'kelecse',
+          posts: [
+            { id: '6325555974635520', title: 'jeminode' },
+            { id: '308014672248832', title: 'orimipon' },
+            { id: '1702188611010560', title: 'rurzilru' },
+            { id: '1828976169320448', title: 'My very special title' },
+            { id: '4158848130613248', title: 'lufzipav' }
+          ]
+        }
+      }
+    }
+  `
+);
+```
+
 ## Generating stub types
 
 You can ask for a type by name the following way:
