@@ -169,7 +169,17 @@ class GraphQLMock {
     return result;
   }
 
-  execute(query, variables) {
+  execute(...args) {
+    let query, variables;
+
+    if (args.length === 1) {
+      query = args.query;
+      variables = args.variables;
+    } else {
+      query = args[0];
+      variables = args[1];
+    }
+
     const parsedQuery = addTypenameToDocument(
       typeof query === "string" ? parse(query) : query
     );
