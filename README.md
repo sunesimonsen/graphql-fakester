@@ -75,6 +75,27 @@ expect(result, "to satisfy", {
 });
 ```
 
+You can also provide the query and the variables as an option object:
+
+```js
+result = await mock.execute({ query: authorQuery, variables: { id: "42" } });
+
+expect(result, "to satisfy", {
+  data: {
+    author: {
+      id: "4945079106011136",
+      firstName: "herubju",
+      lastName: "nocpebe",
+      email: "kelecse",
+      posts: [
+        { id: "1828976169320448", title: "jeminode" },
+        { id: "4158848130613248", title: "orimipon" },
+      ],
+    },
+  },
+});
+```
+
 ## Overriding the default mocks
 
 This project uses [@graphql-tools/mock](https://www.graphql-tools.com/docs/mocking) as its basis and can be used in a very similar way.

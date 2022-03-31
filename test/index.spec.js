@@ -82,7 +82,6 @@ describe("graphql-fakester", () => {
 
       it("mocks basic types out of the box", async () => {
         const result = await mock.execute(authorNameQuery, { id: authorId });
-        console.log("wat", result);
 
         expect(
           result,
@@ -90,6 +89,17 @@ describe("graphql-fakester", () => {
           "{ data: { author: { firstName: 'herubju', lastName: 'nocpebe', __typename: 'Author' } } }"
         );
       });
+    });
+
+    it("supports an option argument instead of a query and variables", async () => {
+      const mock = new GraphQLMock({ typeDefs });
+      const result = await mock.execute(authorNameQuery, { id: authorId });
+
+      expect(
+        result,
+        "to inspect as snapshot",
+        "{ data: { author: { firstName: 'herubju', lastName: 'nocpebe', __typename: 'Author' } } }"
+      );
     });
 
     describe("when mocking a field on an object", () => {
