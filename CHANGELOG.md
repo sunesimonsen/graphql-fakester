@@ -1,3 +1,14 @@
+### v0.11.0 (2022-03-31)
+
+#### Pull requests
+
+- [#29](https://github.com/sunesimonsen/graphql-fakester/pull/29) Automatically add \_\_typename to results ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
+#### Commits to main
+
+- [Fix readme](https://github.com/sunesimonsen/graphql-fakester/commit/33c91cdcd5f39aa4fd3ff132498911544d2fa50c) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+- [Fixing typo](https://github.com/sunesimonsen/graphql-fakester/commit/b046cab7708e76c6f8757bdfe9409f3571e45184) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.10.0 (2022-03-24)
 
 - [#24](https://github.com/sunesimonsen/graphql-fakester/pull/24) Provide cycle and values utilities ([Sune Simonsen](mailto:sune@we-knowhow.dk))
