@@ -93,7 +93,10 @@ describe("graphql-fakester", () => {
 
     it("supports an option argument instead of a query and variables", async () => {
       const mock = new GraphQLMock({ typeDefs });
-      const result = await mock.execute(authorNameQuery, { id: authorId });
+      const result = await mock.execute({
+        query: authorNameQuery,
+        variables: { id: authorId },
+      });
 
       expect(
         result,
