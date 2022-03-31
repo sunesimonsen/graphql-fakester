@@ -1,4 +1,5 @@
 const { makeExecutableSchema } = require("@graphql-tools/schema");
+const { addTypenameToDocument } = require("@apollo/client/utilities");
 
 const {
   addMocksToSchema,
@@ -6,7 +7,7 @@ const {
   MockList,
 } = require("@graphql-tools/mock");
 
-const { graphql, print } = require("graphql");
+const { graphql, print, parse } = require("graphql");
 const merge = require("lodash/merge");
 const mergeWith = require("lodash/mergeWith");
 const Chance = require("chance");
@@ -169,9 +170,13 @@ class GraphQLMock {
   }
 
   execute(query, variables) {
+    const parsedQuery = addTypenameToDocument(
+      typeof query === "string" ? parse(query) : query
+    );
+
     return graphql({
       schema: this.schema,
-      source: typeof query === "string" ? query : print(query),
+      source: print(parsedQuery),
       variableValues: variables,
     });
   }
