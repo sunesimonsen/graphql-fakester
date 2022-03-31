@@ -196,7 +196,7 @@ mock = new GraphQLMock({
 
 result = await mock.execute(authorQuery, { id: authorId });
 
-expect(result, "to equal", {
+expect(result, "to satisfy", {
   data: {
     author: {
       id: "4945079106011136",
@@ -236,7 +236,7 @@ mock = new GraphQLMock({
 
 result = await mock.execute(authorQuery, { id: authorId });
 
-expect(result, "to equal", {
+expect(result, "to satisfy", {
   data: {
     author: {
       id: "4945079106011136",
@@ -276,7 +276,7 @@ mock = new GraphQLMock({
 
 result = await mock.execute(authorQuery, { id: authorId });
 
-expect(result, "to equal", {
+expect(result, "to satisfy", {
   data: {
     author: {
       id: "4945079106011136",
@@ -352,7 +352,7 @@ You can also control the recursion depth using the `depth` option. Default depth
 ```js
 author = mock.getType("Author", 42, { depth: 1, likelihood: 30 });
 
-expect(author, "to equal snapshot", {
+expect(author, "to satisfy", {
   __typename: "Author",
   id: 42,
   firstName: "herubju",
