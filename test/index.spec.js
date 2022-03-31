@@ -82,11 +82,12 @@ describe("graphql-fakester", () => {
 
       it("mocks basic types out of the box", async () => {
         const result = await mock.execute(authorNameQuery, { id: authorId });
+        console.log("wat", result);
 
         expect(
           result,
           "to inspect as snapshot",
-          "{ data: { author: { firstName: 'herubju', lastName: 'nocpebe' } } }"
+          "{ data: { author: { firstName: 'herubju', lastName: 'nocpebe', __typename: 'Author' } } }"
         );
       });
     });
@@ -107,7 +108,7 @@ describe("graphql-fakester", () => {
         expect(
           result,
           "to inspect as snapshot",
-          "{ data: { author: { firstName: 'Max Spencer', lastName: 'herubju' } } }"
+          "{ data: { author: { firstName: 'Max Spencer', lastName: 'herubju', __typename: 'Author' } } }"
         );
       });
 
@@ -130,17 +131,16 @@ describe("graphql-fakester", () => {
             {
               data: {
                 author: {
-                  id: '4945079106011136',
-                  firstName: 'herubju',
-                  lastName: 'nocpebe',
+                  id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
                   email: 'kelecse',
                   posts: [
-                    { id: '6325555974635520', title: 'jeminode' },
-                    { id: '308014672248832', title: 'orimipon' },
-                    { id: '1702188611010560', title: 'rurzilru' },
-                    { id: '1828976169320448', title: 'My very special title' },
-                    { id: '4158848130613248', title: 'lufzipav' }
-                  ]
+                    { id: '6325555974635520', title: 'jeminode', __typename: 'Post' },
+                    { id: '308014672248832', title: 'orimipon', __typename: 'Post' },
+                    { id: '1702188611010560', title: 'rurzilru', __typename: 'Post' },
+                    { id: '1828976169320448', title: 'My very special title', __typename: 'Post' },
+                    { id: '4158848130613248', title: 'lufzipav', __typename: 'Post' }
+                  ],
+                  __typename: 'Author'
                 }
               }
             }
@@ -165,7 +165,7 @@ describe("graphql-fakester", () => {
         expect(
           result,
           "to inspect as snapshot",
-          "{ data: { author: { firstName: 'Jane', lastName: 'Doe' } } }"
+          "{ data: { author: { firstName: 'Jane', lastName: 'Doe', __typename: 'Author' } } }"
         );
       });
     });
@@ -194,21 +194,20 @@ describe("graphql-fakester", () => {
           result,
           "to inspect as snapshot",
           expect.unindent`
-          {
-            data: {
-              author: {
-                id: '6',
-                firstName: 'herubju',
-                lastName: 'nocpebe',
-                email: 'ketis@ziluwi.cw',
-                posts: [
-                  { id: '4945079106011136', title: 'kelecse' },
-                  { id: '6325555974635520', title: 'jeminode' }
-                ]
+            {
+              data: {
+                author: {
+                  id: '6', firstName: 'herubju', lastName: 'nocpebe',
+                  email: 'ketis@ziluwi.cw',
+                  posts: [
+                    { id: '4945079106011136', title: 'kelecse', __typename: 'Post' },
+                    { id: '6325555974635520', title: 'jeminode', __typename: 'Post' }
+                  ],
+                  __typename: 'Author'
+                }
               }
             }
-          }
-        `
+          `
         );
       });
     });
@@ -236,22 +235,21 @@ describe("graphql-fakester", () => {
           result,
           "to inspect as snapshot",
           expect.unindent`
-          {
-            data: {
-              author: {
-                id: '4945079106011136',
-                firstName: 'herubju',
-                lastName: 'nocpebe',
-                email: 'ketis@ziluwi.cw',
-                posts: [
-                  { id: '6325555974635520', title: 'title-ha' },
-                  { id: '308014672248832', title: 'title-felsuh' },
-                  { id: '1702188611010560', title: 'title-rizede' }
-                ]
+            {
+              data: {
+                author: {
+                  id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
+                  email: 'ketis@ziluwi.cw',
+                  posts: [
+                    { id: '6325555974635520', title: 'title-ha', __typename: 'Post' },
+                    { id: '308014672248832', title: 'title-felsuh', __typename: 'Post' },
+                    { id: '1702188611010560', title: 'title-rizede', __typename: 'Post' }
+                  ],
+                  __typename: 'Author'
+                }
               }
             }
-          }
-        `
+          `
         );
       });
     });
@@ -275,22 +273,21 @@ describe("graphql-fakester", () => {
           result,
           "to inspect as snapshot",
           expect.unindent`
-          {
-            data: {
-              author: {
-                id: '4945079106011136',
-                firstName: 'herubju',
-                lastName: 'nocpebe',
-                email: 'kelecse',
-                posts: [
-                  { id: '6325555974635520', title: 'jeminode' },
-                  { id: '308014672248832', title: 'orimipon' },
-                  { id: '1702188611010560', title: 'rurzilru' }
-                ]
+            {
+              data: {
+                author: {
+                  id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
+                  email: 'kelecse',
+                  posts: [
+                    { id: '6325555974635520', title: 'jeminode', __typename: 'Post' },
+                    { id: '308014672248832', title: 'orimipon', __typename: 'Post' },
+                    { id: '1702188611010560', title: 'rurzilru', __typename: 'Post' }
+                  ],
+                  __typename: 'Author'
+                }
               }
             }
-          }
-        `
+          `
         );
       });
     });
@@ -316,16 +313,17 @@ describe("graphql-fakester", () => {
           result,
           "to inspect as snapshot",
           expect.unindent`
-          {
-            data: {
-              upvotePost: {
-                title: 'herubju',
-                author: { firstName: 'nocpebe', lastName: 'kelecse' },
-                votes: 42
+            {
+              data: {
+                upvotePost: {
+                  title: 'herubju',
+                  author: { firstName: 'nocpebe', lastName: 'kelecse', __typename: 'Author' },
+                  votes: 42,
+                  __typename: 'Post'
+                }
               }
             }
-          }
-        `
+          `
         );
       });
     });
@@ -364,22 +362,21 @@ describe("graphql-fakester", () => {
         result,
         "to inspect as snapshot",
         expect.unindent`
-        {
-          data: {
-            author: {
-              id: '4945079106011136',
-              firstName: 'Jane',
-              lastName: 'Doe',
-              email: 'ketis@ziluwi.cw',
-              posts: [
-                { id: '6325555974635520', title: 'title-ha' },
-                { id: '308014672248832', title: 'title-felsuh' },
-                { id: '1702188611010560', title: 'title-rizede' }
-              ]
+          {
+            data: {
+              author: {
+                id: '4945079106011136', firstName: 'Jane', lastName: 'Doe',
+                email: 'ketis@ziluwi.cw',
+                posts: [
+                  { id: '6325555974635520', title: 'title-ha', __typename: 'Post' },
+                  { id: '308014672248832', title: 'title-felsuh', __typename: 'Post' },
+                  { id: '1702188611010560', title: 'title-rizede', __typename: 'Post' }
+                ],
+                __typename: 'Author'
+              }
             }
           }
-        }
-      `
+        `
       );
     });
   });
@@ -745,17 +742,16 @@ describe("cycle", () => {
         {
           data: {
             author: {
-              id: '4945079106011136',
-              firstName: 'herubju',
-              lastName: 'nocpebe',
+              id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
               email: 'kelecse',
               posts: [
-                { id: '6325555974635520', title: 'foo' },
-                { id: '308014672248832', title: 'bar-ketis' },
-                { id: '1702188611010560', title: 'baz' },
-                { id: '1828976169320448', title: 'foo' },
-                { id: '4158848130613248', title: 'bar-ziluwi' }
-              ]
+                { id: '6325555974635520', title: 'foo', __typename: 'Post' },
+                { id: '308014672248832', title: 'bar-ketis', __typename: 'Post' },
+                { id: '1702188611010560', title: 'baz', __typename: 'Post' },
+                { id: '1828976169320448', title: 'foo', __typename: 'Post' },
+                { id: '4158848130613248', title: 'bar-ziluwi', __typename: 'Post' }
+              ],
+              __typename: 'Author'
             }
           }
         }
@@ -789,17 +785,16 @@ describe("values", () => {
         {
           data: {
             author: {
-              id: '4945079106011136',
-              firstName: 'herubju',
-              lastName: 'nocpebe',
+              id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
               email: 'kelecse',
               posts: [
-                { id: '6325555974635520', title: 'foo' },
-                { id: '308014672248832', title: 'bar' },
-                { id: '1702188611010560', title: 'baz-ketis' },
-                { id: '1828976169320448', title: 'baz-ziluwi' },
-                { id: '4158848130613248', title: 'baz-zev' }
-              ]
+                { id: '6325555974635520', title: 'foo', __typename: 'Post' },
+                { id: '308014672248832', title: 'bar', __typename: 'Post' },
+                { id: '1702188611010560', title: 'baz-ketis', __typename: 'Post' },
+                { id: '1828976169320448', title: 'baz-ziluwi', __typename: 'Post' },
+                { id: '4158848130613248', title: 'baz-zev', __typename: 'Post' }
+              ],
+              __typename: 'Author'
             }
           }
         }
