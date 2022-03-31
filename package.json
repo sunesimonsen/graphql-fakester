@@ -1,6 +1,6 @@
 {
   "name": "graphql-fakester",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Create stub data from a GraphQL schema",
   "author": "Sune Simonsen",
   "license": "MIT",

@@ -1,3 +1,7 @@
+### v0.12.0 (2022-03-31)
+
+- [#30](https://github.com/sunesimonsen/graphql-fakester/pull/30) Support an options object for execute ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.11.0 (2022-03-31)
 
 #### Pull requests
