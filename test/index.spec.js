@@ -40,6 +40,15 @@ const authorNameQuery = `
   }
 `;
 
+const postTitlesQuery = `
+  query postTitles {
+    posts {
+      id
+      title
+    }
+  }
+`;
+
 const authorQuery = `
   query authorFirstName($id: ID!) {
     author(id: $id) {
@@ -102,6 +111,26 @@ describe("graphql-fakester", () => {
         result,
         "to inspect as snapshot",
         "{ data: { author: { firstName: 'herubju', lastName: 'nocpebe', __typename: 'Author' } } }"
+      );
+    });
+
+    it("supports a query without variables", async () => {
+      const mock = new GraphQLMock({ typeDefs });
+      const result = await mock.execute(postTitlesQuery);
+
+      expect(
+        result,
+        "to inspect as snapshot",
+        expect.unindent`
+        {
+          data: {
+            posts: [
+              { id: '4945079106011136', title: 'herubju', __typename: 'Post' },
+              { id: '6325555974635520', title: 'nocpebe', __typename: 'Post' }
+            ]
+          }
+        }
+      `
       );
     });
 
