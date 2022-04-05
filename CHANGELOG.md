@@ -1,4 +1,8 @@
-### v0.12.1 (2022-03-31)
+### v0.12.2 (2022-04-05)
+
+- [#32](https://github.com/sunesimonsen/graphql-fakester/pull/32) Fix calling execute with only a query ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
+### v0.12.1 (2022-04-01)
 
 - [Fix option arguments for execute](https://github.com/sunesimonsen/graphql-fakester/commit/15f2c14870889b4bfdf74573218793bd4fc5b07e) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
 
