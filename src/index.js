@@ -34,7 +34,9 @@ const isRef = (value) => value && value.$ref;
 const isRefArray = (value) => Array.isArray(value) && value.some(isRef);
 
 const normalizeExecuteArgs = (args) =>
-  args.length === 1 ? args[0] : { query: args[0], variables: args[1] };
+  args.length === 1 && args[0].query
+    ? args[0]
+    : { query: args[0], variables: args[1] };
 
 class GraphQLMock {
   constructor({ typeDefs, mocks, resolvers, seed = 666 }) {
