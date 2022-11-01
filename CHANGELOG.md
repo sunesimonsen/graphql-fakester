@@ -1,10 +1,6 @@
-### v0.13.1 (2022-11-01)
+### v0.13.2 (2022-11-01)
 
 - [#91](https://github.com/sunesimonsen/graphql-fakester/pull/91) Validate mock structure against schema ([Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk))
-
-### v0.13.1 (2022-11-01)
-
-- [Allow overriding nullable fields with null](https://github.com/sunesimonsen/graphql-fakester/commit/3892a565ab477da75e877f1060041315bd5a1a74) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
 
 ### v0.13.0 (2022-11-01)
 
