@@ -1,3 +1,7 @@
+### v0.14.0 (2022-11-01)
+
+- [Remove unused package](https://github.com/sunesimonsen/graphql-fakester/commit/50cb2e9a959b47b1975f9cf42046b8851449b8ac) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.13.2 (2022-11-01)
 
 - [#91](https://github.com/sunesimonsen/graphql-fakester/pull/91) Validate mock structure against schema ([Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk))
