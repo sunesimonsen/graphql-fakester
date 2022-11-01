@@ -6,6 +6,7 @@ const {
   addMocksToSchema,
   createMockStore,
   MockList,
+  isMockList,
 } = require("@graphql-tools/mock");
 
 const {
@@ -23,7 +24,6 @@ const mergeWith = require("lodash/mergeWith");
 const Chance = require("chance");
 
 const list = (length) => new MockList(length);
-const isMockList = (value) => value && value instanceof MockList;
 
 const values =
   (...mocks) =>
