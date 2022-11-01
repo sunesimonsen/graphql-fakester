@@ -189,7 +189,30 @@ class GraphQLMock {
   }
 
   _validateDataAgainstType({ schema, data, type, context }) {
-    if (type instanceof GraphQLObjectType) {
+    if (data == null) {
+      if (type instanceof GraphQLNonNull) {
+        throw new Error(
+          `Trying to override ${context} (${type}) with value: ${data}`
+        );
+      }
+    } else if (type instanceof GraphQLNonNull) {
+      this._validateDataAgainstType({
+        schema,
+        type: type.ofType,
+        data,
+        context,
+      });
+    } else if (type instanceof GraphQLObjectType) {
+      if (typeof data !== "object") {
+        if (context) {
+          throw new Error(
+            `Trying to override ${context} (${type}) with value: ${data}`
+          );
+        } else {
+          throw new Error(`Trying to override ${type} with value: ${data}`);
+        }
+      }
+
       const fields = type.getFields();
 
       context = context ? `${context}.${type.name}` : type.name;
@@ -241,19 +264,6 @@ class GraphQLMock {
           );
         }
       }
-    } else if (type instanceof GraphQLNonNull) {
-      if (data == null) {
-        throw new Error(
-          `Trying to override ${context} (${type}) with value: ${data}`
-        );
-      }
-
-      this._validateDataAgainstType({
-        schema,
-        type: type.ofType,
-        data,
-        context,
-      });
     } else if (type instanceof GraphQLList) {
       if (Array.isArray(data)) {
         data.forEach((item, i) => {

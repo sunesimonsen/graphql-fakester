@@ -202,6 +202,34 @@ describe("graphql-fakester", () => {
       );
     });
 
+    it("throw an error when providing an incompatible type for a Object resolver", () => {
+      expect(
+        () => {
+          // eslint-disable-next-line no-new
+          new GraphQLMock({ typeDefs, mocks: { Post: "Incompatible" } });
+        },
+        "to throw",
+        "Trying to override Post with value: Incompatible"
+      );
+    });
+
+    it("allows overriding nullable resolvers with null", () => {
+      expect(() => {
+        // eslint-disable-next-line no-new
+        new GraphQLMock({
+          typeDefs,
+          mocks: {
+            Post: {
+              title: null,
+              author: null,
+              votes: null,
+              rating: null,
+            },
+          },
+        });
+      }, "not to throw");
+    });
+
     it("supports an option argument instead of a query and variables", async () => {
       const mock = new GraphQLMock({ typeDefs });
       const result = await mock.execute({
