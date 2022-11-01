@@ -19,6 +19,7 @@ const typeDefs = `
     title: String
     author: Author
     votes: Int
+    rating: Float
   }
 
   type Query {
@@ -64,6 +65,17 @@ const authorQuery = `
   }
 `;
 
+const brokenAuthorQuery = `
+  query authorFirstName($id: ID!) {
+    author(id: $id) {
+      id
+      firstName
+      lastName
+      emails
+    }
+  }
+`;
+
 const upvotePostMutation = `
   mutation upvotePost($postId: ID!) {
     upvotePost(postId: $postId) {
@@ -98,6 +110,124 @@ describe("graphql-fakester", () => {
           "{ data: { author: { firstName: 'herubju', lastName: 'nocpebe', __typename: 'Author' } } }"
         );
       });
+    });
+
+    it("throw an error when providing an unknown resolver", () => {
+      expect(
+        () => {
+          // eslint-disable-next-line no-new
+          new GraphQLMock({
+            typeDefs,
+            mocks: { Athor: { title: "This doesn't exists" } },
+          });
+        },
+        "to throw",
+        "Trying to override unknown type: Athor - did you mean Author"
+      );
+    });
+
+    it("throw an error when providing an unknown field resolver", () => {
+      expect(
+        () => {
+          // eslint-disable-next-line no-new
+          new GraphQLMock({
+            typeDefs,
+            mocks: {
+              Mutation: { unvotePost: "This doesn't exists" },
+            },
+          });
+        },
+        "to throw",
+        "Trying to override unknown field Mutation.unvotePost - did you mean upvotePost"
+      );
+    });
+
+    it("throw an error when providing a nested unknown field resolver", () => {
+      expect(
+        () => {
+          // eslint-disable-next-line no-new
+          new GraphQLMock({
+            typeDefs,
+            mocks: {
+              Mutation: { upvotePost: { unknown: "This doesn't exists" } },
+            },
+          });
+        },
+        "to throw",
+        "Trying to override unknown field Mutation.upvotePost.Post.unknown"
+      );
+    });
+
+    it("throw an error when providing an incompatible type for a String resolver", () => {
+      expect(
+        () => {
+          // eslint-disable-next-line no-new
+          new GraphQLMock({ typeDefs, mocks: { Post: { title: false } } });
+        },
+        "to throw",
+        "Trying to override Post.title (String) with value: false"
+      );
+    });
+
+    it("throw an error when providing an incompatible type for a ID resolver", () => {
+      expect(
+        () => {
+          // eslint-disable-next-line no-new
+          new GraphQLMock({ typeDefs, mocks: { Post: { id: false } } });
+        },
+        "to throw",
+        "Trying to override Post.id (ID) with value: false"
+      );
+    });
+
+    it("throw an error when providing an incompatible type for a Float resolver", () => {
+      expect(
+        () => {
+          // eslint-disable-next-line no-new
+          new GraphQLMock({ typeDefs, mocks: { Post: { rating: false } } });
+        },
+        "to throw",
+        "Trying to override Post.rating (Float) with value: false"
+      );
+    });
+
+    it("throw an error when providing null for a non-null resolver", () => {
+      expect(
+        () => {
+          // eslint-disable-next-line no-new
+          new GraphQLMock({ typeDefs, mocks: { Post: { id: null } } });
+        },
+        "to throw",
+        "Trying to override Post.id (ID!) with value: null"
+      );
+    });
+
+    it("throw an error when providing an incompatible type for a Object resolver", () => {
+      expect(
+        () => {
+          // eslint-disable-next-line no-new
+          new GraphQLMock({ typeDefs, mocks: { Post: "Incompatible" } });
+        },
+        "to throw",
+        "Trying to override Post with value: Incompatible"
+      );
+    });
+
+    it("allows overriding nullable resolvers with null", () => {
+      expect(() => {
+        // eslint-disable-next-line no-new
+        new GraphQLMock({
+          typeDefs,
+          mocks: {
+            Post: {
+              title: null,
+              author: null,
+              votes: null,
+              rating: null,
+            },
+          },
+        });
+      }, "not to throw");
     });
 
     it("supports an option argument instead of a query and variables", async () => {
@@ -255,28 +385,29 @@ describe("graphql-fakester", () => {
     });
 
     describe("when mocking a list resolver", () => {
-      beforeEach(async () => {
-        mock = new GraphQLMock({
-          typeDefs,
-          mocks: {
-            Author: (chance) => ({
-              email: chance.email(),
-              posts: list(3),
-            }),
-            Post: (chance) => ({
-              title: `title-${chance.word()}`,
-            }),
-          },
+      describe("with a mock list", () => {
+        beforeEach(async () => {
+          mock = new GraphQLMock({
+            typeDefs,
+            mocks: {
+              Author: (chance) => ({
+                email: chance.email(),
+                posts: list(3),
+              }),
+              Post: (chance) => ({
+                title: `title-${chance.word()}`,
+              }),
+            },
+          });
         });
-      });
 
-      it("returns the specified number of items", async () => {
-        const result = await mock.execute(authorQuery, { id: authorId });
+        it("returns the specified number of items", async () => {
+          const result = await mock.execute(authorQuery, { id: authorId });
 
-        expect(
-          result,
-          "to inspect as snapshot",
-          expect.unindent`
+          expect(
+            result,
+            "to inspect as snapshot",
+            expect.unindent`
             {
               data: {
                 author: {
@@ -292,7 +423,95 @@ describe("graphql-fakester", () => {
               }
             }
           `
+          );
+        });
+      });
+
+      describe("with an array", () => {
+        beforeEach(async () => {
+          mock = new GraphQLMock({
+            typeDefs,
+            mocks: {
+              Author: (chance) => ({
+                email: chance.email(),
+                posts: [{ title: "specific-title" }, {}],
+              }),
+              Post: (chance) => ({
+                title: `title-${chance.word()}`,
+              }),
+            },
+          });
+        });
+
+        it("returns the specified number of items", async () => {
+          const result = await mock.execute(authorQuery, { id: authorId });
+
+          expect(
+            result,
+            "to inspect as snapshot",
+            expect.unindent`
+            {
+              data: {
+                author: {
+                  id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
+                  email: 'ketis@ziluwi.cw',
+                  posts: [
+                    { id: '6325555974635520', title: 'specific-title', __typename: 'Post' },
+                    { id: '308014672248832', title: 'title-felsuh', __typename: 'Post' }
+                  ],
+                  __typename: 'Author'
+                }
+              }
+            }
+          `
+          );
+        });
+      });
+
+      it("throw an error when providing an incompatible type for an array resolver", () => {
+        expect(
+          () => {
+            // eslint-disable-next-line no-new
+            new GraphQLMock({
+              typeDefs,
+              mocks: { Author: { posts: "NO" } },
+            });
+          },
+          "to throw",
+          "Trying to override Author.posts ([Post!]) with value: NO"
         );
+      });
+
+      it("throw an error when providing an incompatible item type for an array resolver", () => {
+        expect(
+          () => {
+            // eslint-disable-next-line no-new
+            new GraphQLMock({
+              typeDefs,
+              mocks: { Author: { posts: [{ unknown: "NO" }] } },
+            });
+          },
+          "to throw",
+          "Trying to override unknown field Author.posts[0].Post.unknown"
+        );
+      });
+
+      it("returns an error when resolving an incompatible item type for an array resolver", async () => {
+        const mock = new GraphQLMock({
+          typeDefs,
+          mocks: { Author: (chance) => ({ posts: [{ unknown: "NO" }] }) },
+        });
+
+        const result = await mock.execute(authorQuery, { id: authorId });
+
+        expect(result, "to satisfy", {
+          errors: [
+            {
+              message:
+                "Trying to override unknown field Author.posts[0].Post.unknown",
+            },
+          ],
+        });
       });
     });
 
@@ -421,6 +640,21 @@ describe("graphql-fakester", () => {
         `
       );
     });
+
+    it("throws when the query isn't supported", async () => {
+      const mock = new GraphQLMock({ typeDefs });
+
+      const result = await mock.execute(brokenAuthorQuery, { id: authorId });
+
+      expect(result, "to satisfy", {
+        errors: [
+          {
+            message:
+              'Cannot query field "emails" on type "Author". Did you mean "email"?',
+          },
+        ],
+      });
+    });
   });
 
   describe("getType", () => {
@@ -454,22 +688,23 @@ describe("graphql-fakester", () => {
 
       expect(author, "to equal snapshot", {
         __typename: "Author",
-        id: 0,
+        id: "0",
         firstName: "herubju",
         lastName: "nocpebe",
         email: "ketis@ziluwi.cw",
         favoritePost: {
           __typename: "Post",
-          id: "1702188611010560",
+          id: "1",
           title: "kelecse",
           author: {
             __typename: "Author",
-            id: "1828976169320448",
+            id: "2",
             firstName: "jeminode",
             lastName: "orimipon",
-            email: "dabinalut@wepmevagi.gb",
+            email: "nomu@uboli.lu",
           },
-          votes: 14,
+          votes: 61,
+          rating: -99.8113,
         },
       });
     });
@@ -486,16 +721,17 @@ describe("graphql-fakester", () => {
           email: "ketis@ziluwi.cw",
           favoritePost: {
             __typename: "Post",
-            id: "1702188611010560",
+            id: "0",
             title: "kelecse",
             author: {
               __typename: "Author",
-              id: "1828976169320448",
+              id: "1",
               firstName: "jeminode",
               lastName: "orimipon",
-              email: "dabinalut@wepmevagi.gb",
+              email: "nomu@uboli.lu",
             },
-            votes: 14,
+            votes: 61,
+            rating: -99.8113,
           },
         });
       });
@@ -551,68 +787,60 @@ describe("graphql-fakester", () => {
           email: "ketis@ziluwi.cw",
           favoritePost: {
             __typename: "Post",
-            id: "1702188611010560",
+            id: "0",
             title: "kelecse",
             author: {
               __typename: "Author",
-              id: "1828976169320448",
+              id: "1",
               firstName: "jeminode",
               lastName: "orimipon",
-              email: "dabinalut@wepmevagi.gb",
+              email: "nomu@uboli.lu",
               posts: [
                 {
                   __typename: "Post",
-                  id: "4158848130613248",
+                  id: "2",
                   title: "rurzilru",
                   author: {
                     __typename: "Author",
-                    id: "5223687156400128",
+                    id: "3",
                     firstName: "lufzipav",
                     lastName: "bujledol",
-                    email: "jigibu@wurokfiz.ac",
+                    email: "bihac@su.cr",
                   },
-                  votes: 13,
+                  votes: 32,
+                  rating: -99.8113,
                 },
                 {
                   __typename: "Post",
-                  id: "4620302535360512",
+                  id: "4",
                   title: "jonubzov",
                   author: {
                     __typename: "Author",
-                    id: "494041963692032",
+                    id: "5",
                     firstName: "ocomohi",
                     lastName: "widdivew",
-                    email: "lozki@mebjo.er",
                   },
-                  votes: 30,
+                  votes: 13,
+                  rating: -2.8515,
                 },
                 {
                   __typename: "Post",
-                  id: "6201557219540992",
+                  id: "6",
                   title: "zapugjeg",
                   author: {
                     __typename: "Author",
-                    id: "4255354269466624",
+                    id: "7",
                     firstName: "jatafose",
                     lastName: "gorogef",
-                    email: "genowofe@talsahepi.cv",
+                    email: "hoc@ripdetewe.gi",
                   },
-                  votes: 47,
+                  votes: 53,
+                  rating: -42.7705,
                 },
               ],
-              favoritePost: {
-                __typename: "Post",
-                id: "8364009338175488",
-                title: "babucus",
-                author: {
-                  __typename: "Author",
-                  id: "2715279572336640",
-                  firstName: "dolira",
-                  lastName: "kejipure",
-                },
-                votes: 50,
-              },
             },
+            votes: 61,
+            rating: -1.3529,
           },
         });
       });
@@ -647,28 +875,32 @@ describe("graphql-fakester", () => {
           posts: [
             {
               __typename: "Post",
-              id: "4945079106011136",
+              id: "0",
               title: "kelecse",
-              votes: 13,
+              votes: 14,
+              rating: -99.8113,
             },
             {
               __typename: "Post",
-              id: "6325555974635520",
+              id: "1",
               title: "jeminode",
-              votes: 27,
+              votes: 73,
+              rating: -2.8515,
             },
             {
               __typename: "Post",
-              id: "308014672248832",
+              id: "2",
               title: "orimipon",
-              votes: 25,
+              votes: 56,
+              rating: -42.7705,
             },
           ],
           favoritePost: {
             __typename: "Post",
-            id: "1834610061213696",
+            id: "3",
             title: "rurzilru",
-            votes: 100,
+            votes: 13,
+            rating: -1.3529,
           },
         });
       });
@@ -687,56 +919,60 @@ describe("graphql-fakester", () => {
           posts: [
             {
               __typename: "Post",
-              id: "4945079106011136",
+              id: "0",
               title: "kelecse",
               author: {
                 __typename: "Author",
-                id: "1702188611010560",
+                id: "1",
                 firstName: "jeminode",
                 lastName: "orimipon",
-                email: "saboela@hek.cg",
+                email: "dabinalut@wepmevagi.gb",
               },
-              votes: 13,
+              votes: 14,
+              rating: -99.8113,
             },
             {
               __typename: "Post",
-              id: "6325555974635520",
+              id: "2",
               title: "rurzilru",
               author: {
                 __typename: "Author",
-                id: "5223687156400128",
+                id: "3",
                 firstName: "lufzipav",
                 lastName: "bujledol",
-                email: "jigibu@wurokfiz.ac",
+                email: "bihac@su.cr",
               },
-              votes: 27,
+              votes: 54,
+              rating: -2.8515,
             },
             {
               __typename: "Post",
-              id: "308014672248832",
+              id: "4",
               title: "jonubzov",
               author: {
                 __typename: "Author",
-                id: "494041963692032",
+                id: "5",
                 firstName: "ocomohi",
                 lastName: "widdivew",
-                email: "lozki@mebjo.er",
+                email: "joaru@jiw.cc",
               },
-              votes: 25,
+              votes: 82,
+              rating: -42.7705,
             },
           ],
           favoritePost: {
             __typename: "Post",
-            id: "4255354269466624",
+            id: "6",
             title: "zapugjeg",
             author: {
               __typename: "Author",
-              id: "2941350620168192",
+              id: "7",
               firstName: "jatafose",
               lastName: "gorogef",
-              email: "hoc@ripdetewe.gi",
+              email: "tohuh@vi.bh",
             },
-            votes: 26,
+            votes: 14,
+            rating: -1.3529,
           },
         });
       });

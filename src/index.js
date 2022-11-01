@@ -1,5 +1,6 @@
 const { makeExecutableSchema } = require("@graphql-tools/schema");
 const { addTypenameToDocument } = require("@apollo/client/utilities");
+const ukkonen = require("ukkonen");
 
 const {
   addMocksToSchema,
@@ -7,12 +8,22 @@ const {
   MockList,
 } = require("@graphql-tools/mock");
 
-const { graphql, print, parse } = require("graphql");
+const {
+  graphql,
+  print,
+  parse,
+  GraphQLObjectType,
+  GraphQLScalarType,
+  GraphQLNonNull,
+  GraphQLList,
+} = require("graphql");
+
 const merge = require("lodash/merge");
 const mergeWith = require("lodash/mergeWith");
 const Chance = require("chance");
 
 const list = (length) => new MockList(length);
+const isMockList = (value) => value && value instanceof MockList;
 
 const values =
   (...mocks) =>
@@ -38,6 +49,31 @@ const normalizeExecuteArgs = (args) =>
     ? args[0]
     : { query: args[0], variables: args[1] };
 
+const defaultMocks = {
+  Boolean: (chance) => chance.bool(),
+  Float: (chance) => chance.floating({ min: -100, max: 100 }),
+  Int: (chance) => chance.integer({ min: -100, max: 100 }),
+  ID: (chance) => String(chance.natural()),
+  String: (chance) => chance.word({ syllables: 3 }),
+};
+
+const createHint = ({ possibleNames, name }) => {
+  const scoredNames = possibleNames
+    .map((possibleName) => ({
+      name: possibleName,
+      score: ukkonen(name, possibleName),
+    }))
+    .filter(({ score }) => score <= 3);
+
+  if (scoredNames.length > 0) {
+    scoredNames.sort(({ score: a }, { score: b }) => a - b);
+
+    return ` - did you mean ${scoredNames[0].name}`;
+  }
+
+  return "";
+};
+
 class GraphQLMock {
   constructor({ typeDefs, mocks, resolvers, seed = 666 }) {
     const schema = makeExecutableSchema({
@@ -49,31 +85,39 @@ class GraphQLMock {
     this._cache = new Map();
     this._chance = new Chance(seed);
 
-    const defaultMocks = {
-      Boolean: (chance) => chance.bool(),
-      Float: (chance) => chance.floating({ min: -100, max: 100 }),
-      Int: (chance) => chance.integer({ min: -100, max: 100 }),
-      ID: (chance) => String(chance.natural()),
-      String: (chance) => chance.word({ syllables: 3 }),
-    };
-
     const mockArray = [
-      defaultMocks,
+      { ...defaultMocks },
       ...(Array.isArray(mocks) ? mocks : [mocks]).filter(Boolean),
     ];
 
     const mergedMocks = mergeWith(
       ...mockArray.map((mocks) => {
-        Object.keys(mocks).forEach((key) => {
-          const mock = mocks[key];
+        Object.keys(mocks).forEach((typeName) => {
+          const mock = mocks[typeName];
 
           if (typeof mock === "function") {
             const chance = new Chance(this._chance.natural());
             let seq = 0;
 
-            mocks[key] = () => mock(chance, seq++);
+            mocks[typeName] = () => {
+              const data = mock(chance, seq++);
+
+              this._validateDataAgainstTypeName({
+                schema,
+                data,
+                typeName,
+              });
+
+              return data;
+            };
           } else {
-            mocks[key] = () => mock;
+            this._validateDataAgainstTypeName({
+              schema,
+              data: mock,
+              typeName,
+            });
+
+            mocks[typeName] = () => mock;
           }
         });
 
@@ -82,7 +126,6 @@ class GraphQLMock {
       (a, b) => {
         if (a && b) {
           return (...args) => {
-            const aResult = a(...args);
             const bResult = b(...args);
 
             if (bResult === null) {
@@ -93,6 +136,8 @@ class GraphQLMock {
               return bResult;
             }
 
+            const aResult = a(...args);
+
             return merge(aResult, bResult);
           };
         }
@@ -100,6 +145,8 @@ class GraphQLMock {
         return b || a;
       }
     );
+
+    this._validateMocksAgainstSchema({ mocks: mergedMocks, schema });
 
     this.mockStore = createMockStore({
       schema,
@@ -114,9 +161,130 @@ class GraphQLMock {
     });
   }
 
+  _validateMocksAgainstSchema({ mocks, schema }) {
+    const typeMap = schema.getTypeMap();
+    Object.keys(mocks).forEach((typeName) => {
+      const type = typeMap[typeName] || defaultMocks[typeName];
+
+      if (!type) {
+        throw new Error(`Trying to override unknown type: ${typeName}`);
+      }
+    });
+  }
+
+  _validateDataAgainstTypeName({ schema, data, typeName }) {
+    const typeMap = schema.getTypeMap();
+    const type = typeMap[typeName];
+
+    if (type) {
+      this._validateDataAgainstType({ schema, data, type });
+    } else if (!defaultMocks[typeName]) {
+      const hint = createHint({
+        possibleNames: [...Object.keys(typeMap), ...Object.keys(defaultMocks)],
+        name: typeName,
+      });
+
+      throw new Error(`Trying to override unknown type: ${typeName}${hint}`);
+    }
+  }
+
+  _validateDataAgainstType({ schema, data, type, context }) {
+    if (data == null) {
+      if (type instanceof GraphQLNonNull) {
+        throw new Error(
+          `Trying to override ${context} (${type}) with value: ${data}`
+        );
+      }
+    } else if (type instanceof GraphQLNonNull) {
+      this._validateDataAgainstType({
+        schema,
+        type: type.ofType,
+        data,
+        context,
+      });
+    } else if (type instanceof GraphQLObjectType) {
+      if (typeof data !== "object") {
+        if (context) {
+          throw new Error(
+            `Trying to override ${context} (${type}) with value: ${data}`
+          );
+        } else {
+          throw new Error(`Trying to override ${type} with value: ${data}`);
+        }
+      }
+
+      const fields = type.getFields();
+
+      context = context ? `${context}.${type.name}` : type.name;
+
+      Object.entries(data).forEach(([fieldName, value]) => {
+        const field = fields[fieldName];
+
+        if (!field) {
+          const hint = createHint({
+            possibleNames: Object.keys(fields),
+            name: fieldName,
+          });
+
+          throw new Error(
+            `Trying to override unknown field ${context}.${fieldName}${hint}`
+          );
+        }
+
+        this._validateDataAgainstType({
+          schema,
+          data: value,
+          type: field.type,
+          context: `${context}.${fieldName}`,
+        });
+      });
+    } else if (type instanceof GraphQLScalarType) {
+      if (["String", "ID"].includes(type.name)) {
+        if (typeof data !== "string") {
+          throw new Error(
+            `Trying to override ${context} (${type}) with value: ${data}`
+          );
+        }
+      } else if (type.name === "Int") {
+        if (typeof data !== "number" || data % 1 !== 0) {
+          throw new Error(
+            `Trying to override ${context} (${type}) with value: ${data}`
+          );
+        }
+      } else if (type.name === "Float") {
+        if (typeof data !== "number") {
+          throw new Error(
+            `Trying to override ${context} (${type}) with value: ${data}`
+          );
+        }
+      } else if (type.name === "Boolean") {
+        if (typeof data !== "boolean") {
+          throw new Error(
+            `Trying to override ${context} (${type}) with value: ${data}`
+          );
+        }
+      }
+    } else if (type instanceof GraphQLList) {
+      if (Array.isArray(data)) {
+        data.forEach((item, i) => {
+          this._validateDataAgainstType({
+            schema,
+            type: type.ofType,
+            data: item,
+            context: `${context}[${i}]`,
+          });
+        });
+      } else if (!isMockList(data)) {
+        throw new Error(
+          `Trying to override ${context} (${type}) with value: ${data}`
+        );
+      }
+    }
+  }
+
   _resolveRef(value, options) {
     if (isRef(value)) {
-      return this.getType(value.$ref.typeName, value.$ref.key, options);
+      return this.getType(value.$ref.typeName, value.$ref.fieldName, options);
     } else {
       return value;
     }
@@ -124,7 +292,7 @@ class GraphQLMock {
 
   getType(
     typeName,
-    key = this._nextKey++,
+    key = String(this._nextKey++),
     { depth = 2, likelihood = 80 } = {}
   ) {
     const cacheKey = `${typeName}:${key}:${depth}:${likelihood}`;
