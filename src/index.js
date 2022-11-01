@@ -87,7 +87,7 @@ class GraphQLMock {
               this._validateDataAgainstTypeName({
                 schema,
                 data,
-                typeName: typeName,
+                typeName,
               });
 
               return data;
@@ -96,7 +96,7 @@ class GraphQLMock {
             this._validateDataAgainstTypeName({
               schema,
               data: mock,
-              typeName: typeName,
+              typeName,
             });
 
             mocks[typeName] = () => mock;
