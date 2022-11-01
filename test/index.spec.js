@@ -118,11 +118,11 @@ describe("graphql-fakester", () => {
           // eslint-disable-next-line no-new
           new GraphQLMock({
             typeDefs,
-            mocks: { Unknown: { title: "This doesn't exists" } },
+            mocks: { Athor: { title: "This doesn't exists" } },
           });
         },
         "to throw",
-        "Trying to override unknown type: Unknown"
+        "Trying to override unknown type: Athor - did you mean Author"
       );
     });
 
@@ -133,12 +133,12 @@ describe("graphql-fakester", () => {
           new GraphQLMock({
             typeDefs,
             mocks: {
-              Mutation: { unknown: "This doesn't exists" },
+              Mutation: { unvotePost: "This doesn't exists" },
             },
           });
         },
         "to throw",
-        "Trying to override unknown field Mutation.unknown"
+        "Trying to override unknown field Mutation.unvotePost - did you mean upvotePost"
       );
     });
 

@@ -1,5 +1,6 @@
 const { makeExecutableSchema } = require("@graphql-tools/schema");
 const { addTypenameToDocument } = require("@apollo/client/utilities");
+const ukkonen = require("ukkonen");
 
 const {
   addMocksToSchema,
@@ -54,6 +55,23 @@ const defaultMocks = {
   Int: (chance) => chance.integer({ min: -100, max: 100 }),
   ID: (chance) => String(chance.natural()),
   String: (chance) => chance.word({ syllables: 3 }),
+};
+
+const createHint = ({ possibleNames, name }) => {
+  const scoredNames = possibleNames
+    .map((possibleName) => ({
+      name: possibleName,
+      score: ukkonen(name, possibleName),
+    }))
+    .filter(({ score }) => score <= 3);
+
+  if (scoredNames.length > 0) {
+    scoredNames.sort(({ score: a }, { score: b }) => a - b);
+
+    return ` - did you mean ${scoredNames[0].name}`;
+  }
+
+  return "";
 };
 
 class GraphQLMock {
@@ -155,13 +173,19 @@ class GraphQLMock {
   }
 
   _validateDataAgainstTypeName({ schema, data, typeName }) {
-    const type = schema.getType(typeName);
+    const typeMap = schema.getTypeMap();
+    const type = typeMap[typeName];
 
-    if (!type) {
-      throw new Error(`Trying to override unknown type: ${typeName}`);
+    if (type) {
+      this._validateDataAgainstType({ schema, data, type });
+    } else if (!defaultMocks[typeName]) {
+      const hint = createHint({
+        possibleNames: [...Object.keys(typeMap), ...Object.keys(defaultMocks)],
+        name: typeName,
+      });
+
+      throw new Error(`Trying to override unknown type: ${typeName}${hint}`);
     }
-
-    this._validateDataAgainstType({ schema, data, type });
   }
 
   _validateDataAgainstType({ schema, data, type, context }) {
@@ -174,8 +198,13 @@ class GraphQLMock {
         const field = fields[fieldName];
 
         if (!field) {
+          const hint = createHint({
+            possibleNames: Object.keys(fields),
+            name: fieldName,
+          });
+
           throw new Error(
-            `Trying to override unknown field ${context}.${fieldName}`
+            `Trying to override unknown field ${context}.${fieldName}${hint}`
           );
         }
 
