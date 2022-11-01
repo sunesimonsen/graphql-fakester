@@ -1,3 +1,7 @@
+### v0.14.1 (2022-11-01)
+
+- [Use isMockList from @graphql-tools\/mock](https://github.com/sunesimonsen/graphql-fakester/commit/9dda10357f8c79bca8fec8f8e2e0ea67f8378be7) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.14.0 (2022-11-01)
 
 - [Remove unused package](https://github.com/sunesimonsen/graphql-fakester/commit/50cb2e9a959b47b1975f9cf42046b8851449b8ac) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
