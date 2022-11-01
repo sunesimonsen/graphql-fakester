@@ -660,17 +660,17 @@ describe("graphql-fakester", () => {
 
       expect(author, "to equal snapshot", {
         __typename: "Author",
-        id: 0,
+        id: "0",
         firstName: "herubju",
         lastName: "nocpebe",
         email: "ketis@ziluwi.cw",
         favoritePost: {
           __typename: "Post",
-          id: 1,
+          id: "1",
           title: "kelecse",
           author: {
             __typename: "Author",
-            id: 2,
+            id: "2",
             firstName: "jeminode",
             lastName: "orimipon",
             email: "nomu@uboli.lu",
@@ -693,11 +693,11 @@ describe("graphql-fakester", () => {
           email: "ketis@ziluwi.cw",
           favoritePost: {
             __typename: "Post",
-            id: 0,
+            id: "0",
             title: "kelecse",
             author: {
               __typename: "Author",
-              id: 1,
+              id: "1",
               firstName: "jeminode",
               lastName: "orimipon",
               email: "nomu@uboli.lu",
@@ -759,22 +759,22 @@ describe("graphql-fakester", () => {
           email: "ketis@ziluwi.cw",
           favoritePost: {
             __typename: "Post",
-            id: 0,
+            id: "0",
             title: "kelecse",
             author: {
               __typename: "Author",
-              id: 1,
+              id: "1",
               firstName: "jeminode",
               lastName: "orimipon",
               email: "nomu@uboli.lu",
               posts: [
                 {
                   __typename: "Post",
-                  id: 2,
+                  id: "2",
                   title: "rurzilru",
                   author: {
                     __typename: "Author",
-                    id: 3,
+                    id: "3",
                     firstName: "lufzipav",
                     lastName: "bujledol",
                     email: "bihac@su.cr",
@@ -784,11 +784,11 @@ describe("graphql-fakester", () => {
                 },
                 {
                   __typename: "Post",
-                  id: 4,
+                  id: "4",
                   title: "jonubzov",
                   author: {
                     __typename: "Author",
-                    id: 5,
+                    id: "5",
                     firstName: "ocomohi",
                     lastName: "widdivew",
                   },
@@ -797,11 +797,11 @@ describe("graphql-fakester", () => {
                 },
                 {
                   __typename: "Post",
-                  id: 6,
+                  id: "6",
                   title: "zapugjeg",
                   author: {
                     __typename: "Author",
-                    id: 7,
+                    id: "7",
                     firstName: "jatafose",
                     lastName: "gorogef",
                     email: "hoc@ripdetewe.gi",
@@ -847,21 +847,21 @@ describe("graphql-fakester", () => {
           posts: [
             {
               __typename: "Post",
-              id: 0,
+              id: "0",
               title: "kelecse",
               votes: 14,
               rating: -99.8113,
             },
             {
               __typename: "Post",
-              id: 1,
+              id: "1",
               title: "jeminode",
               votes: 73,
               rating: -2.8515,
             },
             {
               __typename: "Post",
-              id: 2,
+              id: "2",
               title: "orimipon",
               votes: 56,
               rating: -42.7705,
@@ -869,7 +869,7 @@ describe("graphql-fakester", () => {
           ],
           favoritePost: {
             __typename: "Post",
-            id: 3,
+            id: "3",
             title: "rurzilru",
             votes: 13,
             rating: -1.3529,
@@ -891,11 +891,11 @@ describe("graphql-fakester", () => {
           posts: [
             {
               __typename: "Post",
-              id: 0,
+              id: "0",
               title: "kelecse",
               author: {
                 __typename: "Author",
-                id: 1,
+                id: "1",
                 firstName: "jeminode",
                 lastName: "orimipon",
                 email: "dabinalut@wepmevagi.gb",
@@ -905,11 +905,11 @@ describe("graphql-fakester", () => {
             },
             {
               __typename: "Post",
-              id: 2,
+              id: "2",
               title: "rurzilru",
               author: {
                 __typename: "Author",
-                id: 3,
+                id: "3",
                 firstName: "lufzipav",
                 lastName: "bujledol",
                 email: "bihac@su.cr",
@@ -919,11 +919,11 @@ describe("graphql-fakester", () => {
             },
             {
               __typename: "Post",
-              id: 4,
+              id: "4",
               title: "jonubzov",
               author: {
                 __typename: "Author",
-                id: 5,
+                id: "5",
                 firstName: "ocomohi",
                 lastName: "widdivew",
                 email: "joaru@jiw.cc",
@@ -934,11 +934,11 @@ describe("graphql-fakester", () => {
           ],
           favoritePost: {
             __typename: "Post",
-            id: 6,
+            id: "6",
             title: "zapugjeg",
             author: {
               __typename: "Author",
-              id: 7,
+              id: "7",
               firstName: "jatafose",
               lastName: "gorogef",
               email: "tohuh@vi.bh",

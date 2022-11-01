@@ -282,7 +282,7 @@ class GraphQLMock {
 
   getType(
     typeName,
-    key = this._nextKey++,
+    key = String(this._nextKey++),
     { depth = 2, likelihood = 80 } = {}
   ) {
     const cacheKey = `${typeName}:${key}:${depth}:${likelihood}`;
