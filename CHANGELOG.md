@@ -1,3 +1,7 @@
+### v0.16.2 (2022-11-02)
+
+- [Don't override the incoming mocks](https://github.com/sunesimonsen/graphql-fakester/commit/bd962ec0225c9a410e5ed9151770b2e77304a981) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.16.1 (2022-11-02)
 
 - [Fix bug where mergeWith modified the input objects](https://github.com/sunesimonsen/graphql-fakester/commit/91cb873f6de76f55bfc8cf6fc28f31b37db7e895) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
