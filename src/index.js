@@ -121,28 +121,27 @@ class GraphQLMock {
       {},
       defaultMocks,
       ...(Array.isArray(mocks) ? mocks : [mocks]).filter(Boolean),
-    ];
-
-    const mergedMocks = mergeWith(
-      ...mockArray.map((mocks) => {
-        Object.keys(mocks).forEach((typeName) => {
-          const mock = mocks[typeName];
-
+    ].map((mocks) =>
+      Object.fromEntries(
+        Object.entries(mocks).map(([typeName, mock]) => {
           if (typeof mock === "function") {
             const chance = new Chance(this._chance.natural());
             let seq = 0;
 
-            mocks[typeName] = () => {
-              const data = mock(chance, seq++);
+            return [
+              typeName,
+              () => {
+                const data = mock(chance, seq++);
 
-              this._validateDataAgainstTypeName({
-                schema,
-                data,
-                typeName,
-              });
+                this._validateDataAgainstTypeName({
+                  schema,
+                  data,
+                  typeName,
+                });
 
-              return data;
-            };
+                return data;
+              },
+            ];
           } else {
             this._validateDataAgainstTypeName({
               schema,
@@ -150,34 +149,33 @@ class GraphQLMock {
               typeName,
             });
 
-            mocks[typeName] = () => mock;
+            return [typeName, () => mock];
           }
-        });
-
-        return mocks;
-      }),
-      (a, b) => {
-        if (a && b) {
-          return (...args) => {
-            const bResult = b(...args);
-
-            if (bResult === null) {
-              return bResult;
-            }
-
-            if (Array.isArray(bResult)) {
-              return bResult;
-            }
-
-            const aResult = a(...args);
-
-            return merge(aResult, bResult);
-          };
-        }
-
-        return b || a;
-      }
+        })
+      )
     );
+
+    const mergedMocks = mergeWith(...mockArray, (a, b) => {
+      if (a && b) {
+        return (...args) => {
+          const bResult = b(...args);
+
+          if (bResult === null) {
+            return bResult;
+          }
+
+          if (Array.isArray(bResult)) {
+            return bResult;
+          }
+
+          const aResult = a(...args);
+
+          return merge(aResult, bResult);
+        };
+      }
+
+      return b || a;
+    });
 
     this._validateMocksAgainstSchema({ mocks: mergedMocks, schema });
 
