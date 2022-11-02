@@ -1,3 +1,7 @@
+### v0.15.0 (2022-11-02)
+
+- [#95](https://github.com/sunesimonsen/graphql-fakester/pull/95) Remove getType as it is buggy and unused \(Major\) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.14.1 (2022-11-01)
 
 - [Use isMockList from @graphql-tools\/mock](https://github.com/sunesimonsen/graphql-fakester/commit/9dda10357f8c79bca8fec8f8e2e0ea67f8378be7) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
