@@ -41,9 +41,6 @@ const cycle =
     return typeof mock === "function" ? mock(chance, seq) : mock;
   };
 
-const isRef = (value) => value && value.$ref;
-const isRefArray = (value) => Array.isArray(value) && value.some(isRef);
-
 const normalizeExecuteArgs = (args) =>
   args.length === 1 && args[0].query
     ? args[0]
@@ -280,66 +277,6 @@ class GraphQLMock {
         );
       }
     }
-  }
-
-  _resolveRef(value, options) {
-    if (isRef(value)) {
-      return this.getType(value.$ref.typeName, value.$ref.fieldName, options);
-    } else {
-      return value;
-    }
-  }
-
-  getType(
-    typeName,
-    key = String(this._nextKey++),
-    { depth = 2, likelihood = 80 } = {}
-  ) {
-    const cacheKey = `${typeName}:${key}:${depth}:${likelihood}`;
-
-    if (this._cache.has(cacheKey)) {
-      return this._cache.get(cacheKey);
-    }
-
-    const type = this.schema.getType(typeName);
-
-    if (!type) {
-      throw new Error(`Unknown type: ${typeName}`);
-    }
-
-    const fields = type.getFields();
-
-    const result = { __typename: typeName };
-
-    for (const [fieldName, field] of Object.entries(fields)) {
-      if (
-        field.type.toString().endsWith("!") ||
-        this._chance.bool({ likelihood })
-      ) {
-        const stubbedField = this.mockStore.get(type.name, key, fieldName);
-
-        if (isRefArray(stubbedField)) {
-          if (depth > 0) {
-            result[fieldName] = stubbedField.map((value) =>
-              this._resolveRef(value, { depth: depth - 1, likelihood })
-            );
-          }
-        } else if (isRef(stubbedField)) {
-          if (depth > 0) {
-            result[fieldName] = this._resolveRef(stubbedField, {
-              depth: depth - 1,
-              likelihood,
-            });
-          }
-        } else {
-          result[fieldName] = stubbedField;
-        }
-      }
-    }
-
-    this._cache.set(cacheKey, result);
-
-    return result;
   }
 
   execute(...args) {
