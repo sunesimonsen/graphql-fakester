@@ -2,7 +2,13 @@ const expect = require("unexpected")
   .clone()
   .use(require("unexpected-snapshot"));
 
-const { GraphQLMock, list, cycle, values } = require("../src/index.js");
+const {
+  GraphQLMock,
+  list,
+  connection,
+  cycle,
+  values,
+} = require("../src/index.js");
 
 const typeDefs = `
   type Author {
@@ -14,12 +20,41 @@ const typeDefs = `
     favoritePost: Post
   }
 
+  type Comment {
+    id: ID!
+    text: String!
+  }
+
+  type CommentConnectionEdge {
+    cursor: String!
+    node: Comment
+  }
+
+  type PageInfo {
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: String
+    endCursor: String
+  }
+
+  type CommentConnection {
+    edges: [CommentConnectionEdge!]!
+    total: Int!
+    pageInfo: PageInfo!
+  }
+
   type Post {
     id: ID!
     title: String
     author: Author
     votes: Int
     rating: Float
+    comments(
+      first: Int
+      last: Int
+      after: String
+      before: String
+    ): CommentConnection!
   }
 
   type Query {
@@ -384,72 +419,29 @@ describe("graphql-fakester", () => {
       });
     });
 
-    describe("when mocking a list resolver", () => {
-      describe("with a mock list", () => {
-        beforeEach(async () => {
-          mock = new GraphQLMock({
-            typeDefs,
-            mocks: {
-              Author: (chance) => ({
-                email: chance.email(),
-                posts: list(3),
-              }),
-              Post: (chance) => ({
-                title: `title-${chance.word()}`,
-              }),
-            },
-          });
-        });
-
-        it("returns the specified number of items", async () => {
-          const result = await mock.execute(authorQuery, { id: authorId });
-
-          expect(
-            result,
-            "to inspect as snapshot",
-            expect.unindent`
-            {
-              data: {
-                author: {
-                  id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
-                  email: 'ketis@ziluwi.cw',
-                  posts: [
-                    { id: '6325555974635520', title: 'title-ha', __typename: 'Post' },
-                    { id: '308014672248832', title: 'title-felsuh', __typename: 'Post' },
-                    { id: '1702188611010560', title: 'title-rizede', __typename: 'Post' }
-                  ],
-                  __typename: 'Author'
-                }
-              }
-            }
-          `
-          );
+    describe("when mocking a list resolver with an array", () => {
+      beforeEach(async () => {
+        mock = new GraphQLMock({
+          typeDefs,
+          mocks: {
+            Author: (chance) => ({
+              email: chance.email(),
+              posts: [{ title: "specific-title" }, {}],
+            }),
+            Post: (chance) => ({
+              title: `title-${chance.word()}`,
+            }),
+          },
         });
       });
 
-      describe("with an array", () => {
-        beforeEach(async () => {
-          mock = new GraphQLMock({
-            typeDefs,
-            mocks: {
-              Author: (chance) => ({
-                email: chance.email(),
-                posts: [{ title: "specific-title" }, {}],
-              }),
-              Post: (chance) => ({
-                title: `title-${chance.word()}`,
-              }),
-            },
-          });
-        });
+      it("returns the specified number of items", async () => {
+        const result = await mock.execute(authorQuery, { id: authorId });
 
-        it("returns the specified number of items", async () => {
-          const result = await mock.execute(authorQuery, { id: authorId });
-
-          expect(
-            result,
-            "to inspect as snapshot",
-            expect.unindent`
+        expect(
+          result,
+          "to inspect as snapshot",
+          expect.unindent`
             {
               data: {
                 author: {
@@ -464,8 +456,7 @@ describe("graphql-fakester", () => {
               }
             }
           `
-          );
-        });
+        );
       });
 
       it("throw an error when providing an incompatible type for an array resolver", () => {
@@ -512,44 +503,6 @@ describe("graphql-fakester", () => {
             },
           ],
         });
-      });
-    });
-
-    describe("when mocking a list resolver to be variable length", () => {
-      beforeEach(async () => {
-        mock = new GraphQLMock({
-          typeDefs,
-          mocks: {
-            Author: (chance) => ({
-              posts: list(chance.integer({ min: 1, max: 5 })),
-            }),
-          },
-        });
-      });
-
-      it("returns the specified number of items", async () => {
-        const result = await mock.execute(authorQuery, { id: authorId });
-
-        expect(
-          result,
-          "to inspect as snapshot",
-          expect.unindent`
-            {
-              data: {
-                author: {
-                  id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
-                  email: 'kelecse',
-                  posts: [
-                    { id: '6325555974635520', title: 'jeminode', __typename: 'Post' },
-                    { id: '308014672248832', title: 'orimipon', __typename: 'Post' },
-                    { id: '1702188611010560', title: 'rurzilru', __typename: 'Post' }
-                  ],
-                  __typename: 'Author'
-                }
-              }
-            }
-          `
-        );
       });
     });
 
@@ -657,6 +610,89 @@ describe("graphql-fakester", () => {
     });
   });
 });
+describe("list", () => {
+  let mock;
+
+  describe("with specific length", () => {
+    beforeEach(async () => {
+      mock = new GraphQLMock({
+        typeDefs,
+        mocks: {
+          Author: (chance) => ({
+            email: chance.email(),
+            posts: list(3),
+          }),
+          Post: (chance) => ({
+            title: `title-${chance.word()}`,
+          }),
+        },
+      });
+    });
+
+    it("returns the specified number of items", async () => {
+      const result = await mock.execute(authorQuery, { id: authorId });
+
+      expect(
+        result,
+        "to inspect as snapshot",
+        expect.unindent`
+            {
+              data: {
+                author: {
+                  id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
+                  email: 'ketis@ziluwi.cw',
+                  posts: [
+                    { id: '6325555974635520', title: 'title-ha', __typename: 'Post' },
+                    { id: '308014672248832', title: 'title-felsuh', __typename: 'Post' },
+                    { id: '1702188611010560', title: 'title-rizede', __typename: 'Post' }
+                  ],
+                  __typename: 'Author'
+                }
+              }
+            }
+          `
+      );
+    });
+  });
+
+  describe("with variable length", () => {
+    beforeEach(async () => {
+      mock = new GraphQLMock({
+        typeDefs,
+        mocks: {
+          Author: (chance) => ({
+            posts: list(chance.integer({ min: 1, max: 5 })),
+          }),
+        },
+      });
+    });
+
+    it("returns the specified number of items", async () => {
+      const result = await mock.execute(authorQuery, { id: authorId });
+
+      expect(
+        result,
+        "to inspect as snapshot",
+        expect.unindent`
+            {
+              data: {
+                author: {
+                  id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
+                  email: 'kelecse',
+                  posts: [
+                    { id: '6325555974635520', title: 'jeminode', __typename: 'Post' },
+                    { id: '308014672248832', title: 'orimipon', __typename: 'Post' },
+                    { id: '1702188611010560', title: 'rurzilru', __typename: 'Post' }
+                  ],
+                  __typename: 'Author'
+                }
+              }
+            }
+          `
+      );
+    });
+  });
+});
 
 describe("cycle", () => {
   let mock;
@@ -743,5 +779,132 @@ describe("values", () => {
         }
       `
     );
+  });
+});
+
+describe("connection", () => {
+  let mock;
+
+  describe("with default options ", () => {
+    it("returns a total field", () => {
+      expect(connection(5, { includeTotal: true }), "to equal snapshot", {
+        edges: [
+          { cursor: "cursor-0", node: {} },
+          { cursor: "cursor-1", node: {} },
+          { cursor: "cursor-2", node: {} },
+          { cursor: "cursor-3", node: {} },
+          { cursor: "cursor-4", node: {} },
+        ],
+        pageInfo: {
+          hasNextPage: true,
+          hasPreviousPage: false,
+          endCursor: "cursor-4",
+          startCursor: "cursor-0",
+        },
+        total: 5,
+      });
+    });
+  });
+
+  describe("with includeTotal=true", () => {
+    it("returns a total field", () => {
+      expect(connection(5, { includeTotal: true }), "to satisfy", {
+        total: 5,
+      });
+    });
+  });
+
+  describe("with hasNextPage=false", () => {
+    it("sets hasNextPage to false", () => {
+      expect(connection(5, { hasNextPage: false }), "to satisfy", {
+        pageInfo: { hasNextPage: false },
+      });
+    });
+  });
+
+  describe("with hasPreviousPage=true", () => {
+    it("sets hasPreviousPage to true", () => {
+      expect(connection(5, { hasPreviousPage: true }), "to satisfy", {
+        pageInfo: { hasPreviousPage: true },
+      });
+    });
+  });
+
+  describe("when mocking a Relay connection resolver", () => {
+    const postsQuery = `
+        query postsQuery {
+          posts {
+            id
+            title
+            comments(first: 1) {
+              edges {
+                cursor
+                node {
+                  id
+                  text
+                }
+              }
+              pageInfo {
+                hasNextPage
+                hasPreviousPage
+                hasNextPage
+                endCursor
+              }
+              total
+            }
+          }
+        }
+      `;
+
+    beforeEach(async () => {
+      mock = new GraphQLMock({
+        typeDefs,
+        mocks: {
+          Query: {
+            posts: list(1),
+          },
+          CommentConnection: connection(1, { includeTotal: true }),
+        },
+      });
+    });
+
+    it("returns the specified number of items in the connection", async () => {
+      const result = await mock.execute(postsQuery);
+
+      expect(
+        result,
+        "to inspect as snapshot",
+        expect.unindent`
+          {
+            data: {
+              posts: [
+                {
+                  id: '4945079106011136',
+                  title: 'herubju',
+                  comments: {
+                    edges: [
+                      {
+                        cursor: 'cursor-0',
+                        node: { id: '6325555974635520', text: 'nocpebe', __typename: 'Comment' },
+                        __typename: 'CommentConnectionEdge'
+                      }
+                    ],
+                    pageInfo: {
+                      hasNextPage: true,
+                      hasPreviousPage: false,
+                      endCursor: 'cursor-0',
+                      __typename: 'PageInfo'
+                    },
+                    total: 1,
+                    __typename: 'CommentConnection'
+                  },
+                  __typename: 'Post'
+                }
+              ]
+            }
+          }
+        `
+      );
+    });
   });
 });

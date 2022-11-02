@@ -24,11 +24,41 @@ const typeDefs = `
     posts: [Post]
   }
 
+  type Comment {
+    id: ID!
+    text: String!
+  }
+
+  type CommentConnectionEdge {
+    cursor: String!
+    node: Comment
+  }
+
+  type PageInfo {
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: String
+    endCursor: String
+  }
+
+  type CommentConnection {
+    edges: [CommentConnectionEdge!]!
+    total: Int!
+    pageInfo: PageInfo!
+  }
+
   type Post {
     id: ID!
     title: String
+    text: String
     author: Author
     votes: Int
+    comments(
+      first: Int
+      last: Int
+      after: String
+      before: String
+    ): CommentConnection!
   }
 
   type Query {
@@ -200,6 +230,78 @@ expect(result, "to satisfy", {
 ```
 
 Notice `min` defaults to 0 and `max` defaults to 10, so can just call the list function without any arguments, or only send in either `min` or `max`.
+
+## Mock a Relay connection resolver
+
+```js
+import { connection } from "graphql-fakester";
+
+mock = new GraphQLMock({
+  typeDefs,
+  mocks: {
+    posts: list(1),
+    CommentConnection: connection(1, { includeTotal: true }),
+  },
+});
+
+const postsQuery = `
+  query postsQuery {
+    posts {
+      id
+      title
+      comments(first: 1) {
+        edges {
+          cursor
+          node {
+            id
+            text
+          }
+        }
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          hasNextPage
+          endCursor
+        }
+        total
+      }
+    }
+  }
+`;
+
+result = await mock.execute(postsQuery);
+
+expect(result, "to satisfy", {
+  data: {
+    posts: [
+      {
+        id: "4945079106011136",
+        title: "herubju",
+        comments: {
+          edges: [
+            {
+              cursor: "cursor-0",
+              node: { id: "6325555974635520", text: "nocpebe" },
+            },
+          ],
+          pageInfo: {
+            hasNextPage: true,
+            hasPreviousPage: false,
+            endCursor: "cursor-0",
+          },
+          total: 1,
+        },
+      },
+    ],
+  },
+});
+```
+
+Options:
+
+- includeTotal (false): If a total field should be included
+- hasNextPage (true): sets the pageInfo.hasNextPage value
+- hasPreviousPage (false): sets the pageInfo.hasPreviousPage value
 
 ## Overriding a special list entry
 
