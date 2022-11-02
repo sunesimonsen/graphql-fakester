@@ -1,3 +1,7 @@
+### v0.16.0 (2022-11-02)
+
+- [#96](https://github.com/sunesimonsen/graphql-fakester/pull/96) Add a helper to mock Relay connections ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.15.0 (2022-11-02)
 
 - [#95](https://github.com/sunesimonsen/graphql-fakester/pull/95) Remove getType as it is buggy and unused \(Major\) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
