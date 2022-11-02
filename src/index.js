@@ -118,7 +118,8 @@ class GraphQLMock {
     this._chance = new Chance(seed);
 
     const mockArray = [
-      { ...defaultMocks },
+      {},
+      defaultMocks,
       ...(Array.isArray(mocks) ? mocks : [mocks]).filter(Boolean),
     ];
 
