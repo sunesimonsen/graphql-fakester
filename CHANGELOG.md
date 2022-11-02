@@ -1,3 +1,8 @@
+### v0.16.1 (2022-11-02)
+
+- [Fix bug where mergeWith modified the input objects](https://github.com/sunesimonsen/graphql-fakester/commit/91cb873f6de76f55bfc8cf6fc28f31b37db7e895) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+- [Document overriding with a nested structure](https://github.com/sunesimonsen/graphql-fakester/commit/d88bf9d43ad196ca83ac974f6c040f3237113efb) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.16.0 (2022-11-02)
 
 - [#96](https://github.com/sunesimonsen/graphql-fakester/pull/96) Add a helper to mock Relay connections ([Sune Simonsen](mailto:sune@we-knowhow.dk))
