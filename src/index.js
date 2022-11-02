@@ -25,6 +25,41 @@ const Chance = require("chance");
 
 const list = (length) => new MockList(length);
 
+const connection = (length, options = {}) => {
+  const {
+    hasPreviousPage = false,
+    hasNextPage = true,
+    includeTotal = false,
+  } = options;
+
+  const edges = [];
+
+  for (let i = 0; i < length; i++) {
+    edges.push({
+      cursor: `cursor-${i}`,
+      node: {},
+    });
+  }
+
+  let startCursor, endCursor;
+
+  if (length > 0) {
+    startCursor = edges[0].cursor;
+    endCursor = edges[edges.length - 1].cursor;
+  }
+
+  return {
+    edges,
+    pageInfo: {
+      hasNextPage,
+      hasPreviousPage,
+      endCursor,
+      startCursor,
+    },
+    ...(includeTotal ? { total: length } : {}),
+  };
+};
+
 const values =
   (...mocks) =>
   (chance, seq) => {
@@ -297,6 +332,7 @@ class GraphQLMock {
 module.exports = {
   GraphQLMock,
   list,
+  connection,
   cycle,
   values,
 };
