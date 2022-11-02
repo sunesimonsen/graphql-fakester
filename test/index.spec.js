@@ -361,18 +361,36 @@ describe("graphql-fakester", () => {
         mock = new GraphQLMock({
           typeDefs,
           mocks: {
-            Author: { firstName: "Jane", lastName: "Doe" },
+            Author: {
+              firstName: "Jane",
+              lastName: "Doe",
+              posts: [{ title: "First post" }, {}],
+            },
           },
         });
       });
 
       it("the mocked field will be used", async () => {
-        const result = await mock.execute(authorNameQuery, { id: authorId });
+        const result = await mock.execute(authorQuery, { id: authorId });
 
         expect(
           result,
           "to inspect as snapshot",
-          "{ data: { author: { firstName: 'Jane', lastName: 'Doe', __typename: 'Author' } } }"
+          expect.unindent`
+            {
+              data: {
+                author: {
+                  id: '4945079106011136', firstName: 'Jane', lastName: 'Doe',
+                  email: 'herubju',
+                  posts: [
+                    { id: '6325555974635520', title: 'First post', __typename: 'Post' },
+                    { id: '308014672248832', title: 'nocpebe', __typename: 'Post' }
+                  ],
+                  __typename: 'Author'
+                }
+              }
+            }
+          `
         );
       });
     });
@@ -606,6 +624,119 @@ describe("graphql-fakester", () => {
               'Cannot query field "emails" on type "Author". Did you mean "email"?',
           },
         ],
+      });
+    });
+
+    describe("mocking with a nested structure", () => {
+      const authorQuery = `
+        query authorFirstName($id: ID!) {
+          author(id: $id) {
+            id
+            firstName
+            lastName
+            email
+            posts {
+              id
+              title
+              comments {
+                edges {
+                  node {
+                    id
+                    text
+                  }
+                }
+              }
+            }
+          }
+        }
+      `;
+
+      it("uses the entire provided structure", async () => {
+        const mock = new GraphQLMock({
+          typeDefs,
+          mocks: {
+            Query: {
+              author: {
+                posts: [
+                  {
+                    title: "post-0",
+                    comments: {
+                      edges: [
+                        { node: { text: "post-0-comment-0" } },
+                        { node: { text: "post-0-comment-1" } },
+                      ],
+                    },
+                  },
+                  {
+                    title: "post-1",
+                    comments: {
+                      edges: [
+                        { node: { text: "post-1-comment-0" } },
+                        { node: { text: "post-1-comment-1" } },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        });
+
+        const result = await mock.execute(authorQuery, { id: authorId });
+
+        expect(
+          result,
+          "to inspect as snapshot",
+          expect.unindent`
+          {
+            data: {
+              author: {
+                id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
+                email: 'kelecse',
+                posts: [
+                  {
+                    id: '6325555974635520',
+                    title: 'post-0',
+                    comments: {
+                      edges: [
+                        {
+                          node: { id: '308014672248832', text: 'post-0-comment-0', __typename: 'Comment' },
+                          __typename: 'CommentConnectionEdge'
+                        },
+                        {
+                          node: { id: '1702188611010560', text: 'post-0-comment-1', __typename: 'Comment' },
+                          __typename: 'CommentConnectionEdge'
+                        }
+                      ],
+                      __typename: 'CommentConnection'
+                    },
+                    __typename: 'Post'
+                  },
+                  {
+                    id: '1828976169320448',
+                    title: 'post-1',
+                    comments: {
+                      edges: [
+                        {
+                          node: { id: '4158848130613248', text: 'post-1-comment-0', __typename: 'Comment' },
+                          __typename: 'CommentConnectionEdge'
+                        },
+                        {
+                          node: { id: '4620302535360512', text: 'post-1-comment-1', __typename: 'Comment' },
+                          __typename: 'CommentConnectionEdge'
+                        }
+                      ],
+                      __typename: 'CommentConnection'
+                    },
+                    __typename: 'Post'
+                  }
+                ],
+                __typename: 'Author'
+              }
+            }
+          }
+        `
+        );
       });
     });
   });

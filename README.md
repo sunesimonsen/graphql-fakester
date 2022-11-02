@@ -136,7 +136,11 @@ If you just want to hardcode an override, you can do that the following way:
 mock = new GraphQLMock({
   typeDefs,
   mocks: {
-    Author: { firstName: "Jane", lastName: "Doe" },
+    Author: {
+      firstName: "Jane",
+      lastName: "Doe",
+      posts: [{ title: "First post" }, {}],
+    },
   },
 });
 
@@ -150,7 +154,7 @@ expect(result, "to satisfy", {
       lastName: "Doe",
       email: "kelecse",
       posts: [
-        { id: "1828976169320448", title: "jeminode" },
+        { id: "1828976169320448", title: "First post" },
         { id: "4158848130613248", title: "orimipon" },
       ],
     },
