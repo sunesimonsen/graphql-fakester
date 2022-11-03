@@ -137,6 +137,7 @@ mock = new GraphQLMock({
   typeDefs,
   mocks: {
     Author: {
+      id: "author-0",
       firstName: "Jane",
       lastName: "Doe",
       posts: [{ title: "First post" }, {}],
@@ -177,6 +178,7 @@ mock = new GraphQLMock({
   typeDefs,
   mocks: {
     Author: {
+      id: "author-0",
       firstName: "Jane",
       lastName: "Doe",
       posts: list(3),
@@ -210,6 +212,7 @@ mock = new GraphQLMock({
   typeDefs,
   mocks: {
     Author: chance => ({
+      id: "author-0",
       posts: list(chance.integer{ min: 1, max: 5 }),
     }),
   },
@@ -315,9 +318,12 @@ You can get a sequence number corresponding to the number of time a mock has bee
 mock = new GraphQLMock({
   typeDefs,
   mocks: {
-    Author: { posts: list(5) },
+    Author: {
+      id: "author-0",
+      posts: list(5),
+    },
     Post: (chance, seq) =>
-      seq === 3 ? { title: "My very special title" } : {},
+      seq === 3 ? { id: "post-0", title: "My very special title" } : {},
   },
 });
 
@@ -352,11 +358,17 @@ import { cycle } from "graphql-fakester";
 mock = new GraphQLMock({
   typeDefs,
   mocks: {
-    Author: { posts: list(5) },
+    Author: {
+      id: "author-0",
+      posts: list(5),
+    },
     Post: cycle(
-      { title: "foo" },
-      (chance) => ({ title: `bar-${chance.word()}` }),
-      { title: "baz" }
+      { id: "post-0", title: "foo" },
+      (chance) => ({
+        id: String(chance.natural()),
+        title: `bar-${chance.word()}`,
+      }),
+      { id: "post-2", title: "baz" }
     ),
   },
 });
@@ -366,15 +378,15 @@ result = await mock.execute(authorQuery, { id: authorId });
 expect(result, "to satisfy", {
   data: {
     author: {
-      id: "4945079106011136",
+      id: "author-0",
       firstName: "herubju",
       lastName: "nocpebe",
       email: "kelecse",
       posts: [
-        { id: "6325555974635520", title: "foo" },
+        { id: "post-0", title: "foo" },
         { id: "308014672248832", title: "bar-ketis" },
-        { id: "1702188611010560", title: "baz" },
-        { id: "1828976169320448", title: "foo" },
+        { id: "post-1", title: "baz" },
+        { id: "post-0", title: "foo" },
         { id: "4158848130613248", title: "bar-ziluwi" },
       ],
     },
@@ -394,10 +406,18 @@ import { values } from "graphql-fakester";
 mock = new GraphQLMock({
   typeDefs,
   mocks: {
-    Author: { posts: list(5) },
-    Post: values({ title: "foo" }, { title: "bar" }, (chance) => ({
-      title: `baz-${chance.word()}`,
-    })),
+    Author: {
+      id: "author-0",
+      posts: list(5),
+    },
+    Post: values(
+      { id: "post-0", title: "foo" },
+      { id: "post-1", title: "bar" },
+      (chance) => ({
+        id: String(chance.natural()),
+        title: `baz-${chance.word()}`,
+      })
+    ),
   },
 });
 
@@ -406,13 +426,13 @@ result = await mock.execute(authorQuery, { id: authorId });
 expect(result, "to satisfy", {
   data: {
     author: {
-      id: "4945079106011136",
+      id: "author-0",
       firstName: "herubju",
       lastName: "nocpebe",
       email: "kelecse",
       posts: [
-        { id: "6325555974635520", title: "foo" },
-        { id: "308014672248832", title: "bar" },
+        { id: "post-0", title: "foo" },
+        { id: "post-1", title: "bar" },
         { id: "1702188611010560", title: "baz-ketis" },
         { id: "1828976169320448", title: "baz-ziluwi" },
         { id: "4158848130613248", title: "baz-zev" },
@@ -470,10 +490,12 @@ class MyMock extends GraphQLMock {
       mocks: [
         {
           Author: (chance) => ({
+            id: String(chance.natural()),
             email: chance.email(),
             posts: list(3),
           }),
           Post: (chance) => ({
+            id: String(chance.natural()),
             title: `title-${chance.word()}`,
           }),
         },
@@ -485,6 +507,7 @@ class MyMock extends GraphQLMock {
 
 mock = new MyMock({
   Author: (chance) => ({
+    id: "author-0",
     firstName: "Jane",
     lastName: "Doe",
   }),
