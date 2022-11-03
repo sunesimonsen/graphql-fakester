@@ -247,7 +247,7 @@ class GraphQLMock {
 
       context = context ? `${context}.${type.name}` : type.name;
 
-      if ("id" in fields && !("id" in data)) {
+      if ("id" in fields && !("id" in data) && Object.keys(data).length > 0) {
         throw new Error(`No id specified for ${context}`);
       }
 
