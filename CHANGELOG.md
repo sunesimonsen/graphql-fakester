@@ -1,3 +1,7 @@
+### v0.17.0 (2022-11-03)
+
+- [#99](https://github.com/sunesimonsen/graphql-fakester/pull/99) Require ids on mocks \(Major\) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.16.2 (2022-11-02)
 
 - [Don't override the incoming mocks](https://github.com/sunesimonsen/graphql-fakester/commit/bd962ec0225c9a410e5ed9151770b2e77304a981) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
