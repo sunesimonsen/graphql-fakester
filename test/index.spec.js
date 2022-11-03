@@ -132,7 +132,11 @@ describe("graphql-fakester", () => {
 
   describe("constructor", () => {
     it("doesn't modify the incoming mocks", () => {
-      const authorMock = { firstName: "Jane", lastName: "Doe" };
+      const authorMock = {
+        id: "author-0",
+        firstName: "Jane",
+        lastName: "Doe",
+      };
       const mocks = {
         Author: authorMock,
       };
@@ -200,7 +204,9 @@ describe("graphql-fakester", () => {
           new GraphQLMock({
             typeDefs,
             mocks: {
-              Mutation: { upvotePost: { unknown: "This doesn't exists" } },
+              Mutation: {
+                upvotePost: { id: "post-0", unknown: "This doesn't exists" },
+              },
             },
           });
         },
@@ -213,7 +219,10 @@ describe("graphql-fakester", () => {
       expect(
         () => {
           // eslint-disable-next-line no-new
-          new GraphQLMock({ typeDefs, mocks: { Post: { title: false } } });
+          new GraphQLMock({
+            typeDefs,
+            mocks: { Post: { id: "id", title: false } },
+          });
         },
         "to throw",
         "Trying to override Post.title (String) with value: false"
@@ -235,7 +244,10 @@ describe("graphql-fakester", () => {
       expect(
         () => {
           // eslint-disable-next-line no-new
-          new GraphQLMock({ typeDefs, mocks: { Post: { rating: false } } });
+          new GraphQLMock({
+            typeDefs,
+            mocks: { Post: { id: "id", rating: false } },
+          });
         },
         "to throw",
         "Trying to override Post.rating (Float) with value: false"
@@ -271,6 +283,7 @@ describe("graphql-fakester", () => {
           typeDefs,
           mocks: {
             Post: {
+              id: "id",
               title: null,
               author: null,
               votes: null,
@@ -321,6 +334,7 @@ describe("graphql-fakester", () => {
           typeDefs,
           mocks: {
             Author: (chance) => ({
+              id: "author-0",
               firstName: chance.name(),
             }),
           },
@@ -339,9 +353,11 @@ describe("graphql-fakester", () => {
         mock = new GraphQLMock({
           typeDefs,
           mocks: {
-            Author: { posts: list(5) },
+            Author: { id: "author-0", posts: [] },
             Post: (chance, seq) =>
-              seq === 3 ? { title: "My very special title" } : {},
+              seq === 3
+                ? { id: `post-${seq}`, title: "My very special title" }
+                : { id: `post-${seq}` },
           },
         });
 
@@ -354,16 +370,8 @@ describe("graphql-fakester", () => {
             {
               data: {
                 author: {
-                  id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
-                  email: 'kelecse',
-                  posts: [
-                    { id: '6325555974635520', title: 'jeminode', __typename: 'Post' },
-                    { id: '308014672248832', title: 'orimipon', __typename: 'Post' },
-                    { id: '1702188611010560', title: 'rurzilru', __typename: 'Post' },
-                    { id: '1828976169320448', title: 'My very special title', __typename: 'Post' },
-                    { id: '4158848130613248', title: 'lufzipav', __typename: 'Post' }
-                  ],
-                  __typename: 'Author'
+                  id: 'author-0', firstName: 'herubju', lastName: 'nocpebe', email: 'kelecse',
+                  posts: [], __typename: 'Author'
                 }
               }
             }
@@ -378,9 +386,10 @@ describe("graphql-fakester", () => {
           typeDefs,
           mocks: {
             Author: {
+              id: "author-0",
               firstName: "Jane",
               lastName: "Doe",
-              posts: [{ title: "First post" }, {}],
+              posts: [{ id: "post-0", title: "First post" }, { id: "post-1" }],
             },
           },
         });
@@ -396,11 +405,10 @@ describe("graphql-fakester", () => {
             {
               data: {
                 author: {
-                  id: '4945079106011136', firstName: 'Jane', lastName: 'Doe',
-                  email: 'herubju',
+                  id: 'author-0', firstName: 'Jane', lastName: 'Doe', email: 'herubju',
                   posts: [
-                    { id: '6325555974635520', title: 'First post', __typename: 'Post' },
-                    { id: '308014672248832', title: 'nocpebe', __typename: 'Post' }
+                    { id: 'post-0', title: 'First post', __typename: 'Post' },
+                    { id: 'post-1', title: 'nocpebe', __typename: 'Post' }
                   ],
                   __typename: 'Author'
                 }
@@ -417,6 +425,7 @@ describe("graphql-fakester", () => {
           typeDefs,
           mocks: {
             Author: (chance) => ({
+              id: "author-0",
               email: chance.email(),
             }),
           },
@@ -459,10 +468,15 @@ describe("graphql-fakester", () => {
           typeDefs,
           mocks: {
             Author: (chance) => ({
+              id: "author-0",
               email: chance.email(),
-              posts: [{ title: "specific-title" }, {}],
+              posts: [
+                { id: "post-1", title: "specific-title" },
+                { id: "post-2" },
+              ],
             }),
             Post: (chance) => ({
+              id: "post-0",
               title: `title-${chance.word()}`,
             }),
           },
@@ -479,11 +493,11 @@ describe("graphql-fakester", () => {
             {
               data: {
                 author: {
-                  id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
+                  id: 'author-0', firstName: 'herubju', lastName: 'nocpebe',
                   email: 'ketis@ziluwi.cw',
                   posts: [
-                    { id: '6325555974635520', title: 'specific-title', __typename: 'Post' },
-                    { id: '308014672248832', title: 'title-felsuh', __typename: 'Post' }
+                    { id: 'post-1', title: 'specific-title', __typename: 'Post' },
+                    { id: 'post-2', title: 'title-ha', __typename: 'Post' }
                   ],
                   __typename: 'Author'
                 }
@@ -499,7 +513,7 @@ describe("graphql-fakester", () => {
             // eslint-disable-next-line no-new
             new GraphQLMock({
               typeDefs,
-              mocks: { Author: { posts: "NO" } },
+              mocks: { Author: { id: "author-0", posts: "NO" } },
             });
           },
           "to throw",
@@ -513,7 +527,12 @@ describe("graphql-fakester", () => {
             // eslint-disable-next-line no-new
             new GraphQLMock({
               typeDefs,
-              mocks: { Author: { posts: [{ unknown: "NO" }] } },
+              mocks: {
+                Author: {
+                  id: "author-0",
+                  posts: [{ id: "post-0", unknown: "NO" }],
+                },
+              },
             });
           },
           "to throw",
@@ -524,7 +543,12 @@ describe("graphql-fakester", () => {
       it("returns an error when resolving an incompatible item type for an array resolver", async () => {
         const mock = new GraphQLMock({
           typeDefs,
-          mocks: { Author: (chance) => ({ posts: [{ unknown: "NO" }] }) },
+          mocks: {
+            Author: (chance) => ({
+              id: "author-0",
+              posts: [{ id: "post-0", unknown: "NO" }],
+            }),
+          },
         });
 
         const result = await mock.execute(authorQuery, { id: authorId });
@@ -547,6 +571,7 @@ describe("graphql-fakester", () => {
           mocks: {
             Mutation: {
               upvotePost: {
+                id: "post-0",
                 votes: 42,
               },
             },
@@ -584,10 +609,12 @@ describe("graphql-fakester", () => {
             mocks: [
               {
                 Author: (chance) => ({
+                  id: chance.guid(),
                   email: chance.email(),
                   posts: list(3),
                 }),
                 Post: (chance) => ({
+                  id: chance.guid(),
                   title: `title-${chance.word()}`,
                 }),
               },
@@ -599,6 +626,7 @@ describe("graphql-fakester", () => {
 
       const mock = new MyMock({
         Author: (chance) => ({
+          id: "author-0",
           firstName: "Jane",
           lastName: "Doe",
         }),
@@ -613,12 +641,24 @@ describe("graphql-fakester", () => {
           {
             data: {
               author: {
-                id: '4945079106011136', firstName: 'Jane', lastName: 'Doe',
-                email: 'ketis@ziluwi.cw',
+                id: 'author-0', firstName: 'Jane', lastName: 'Doe',
+                email: 'hunmap@cuwcodbo.su',
                 posts: [
-                  { id: '6325555974635520', title: 'title-ha', __typename: 'Post' },
-                  { id: '308014672248832', title: 'title-felsuh', __typename: 'Post' },
-                  { id: '1702188611010560', title: 'title-rizede', __typename: 'Post' }
+                  {
+                    id: 'cedc44ce-2648-5f34-8300-8cec72982034',
+                    title: 'title-jahnul',
+                    __typename: 'Post'
+                  },
+                  {
+                    id: '91741d05-4ccd-5c70-999f-36a4c2dd48e7',
+                    title: 'title-so',
+                    __typename: 'Post'
+                  },
+                  {
+                    id: 'b062790a-03d1-5b88-ae13-38f0baaddd5f',
+                    title: 'title-kub',
+                    __typename: 'Post'
+                  }
                 ],
                 __typename: 'Author'
               }
@@ -673,22 +713,45 @@ describe("graphql-fakester", () => {
           mocks: {
             Query: {
               author: {
+                id: "author-0",
                 posts: [
                   {
+                    id: "post-0",
                     title: "post-0",
                     comments: {
                       edges: [
-                        { node: { text: "post-0-comment-0" } },
-                        { node: { text: "post-0-comment-1" } },
+                        {
+                          node: {
+                            id: "comment-0",
+                            text: "comment-0",
+                          },
+                        },
+                        {
+                          node: {
+                            id: "comment-1",
+                            text: "comment-1",
+                          },
+                        },
                       ],
                     },
                   },
                   {
+                    id: "post-1",
                     title: "post-1",
                     comments: {
                       edges: [
-                        { node: { text: "post-1-comment-0" } },
-                        { node: { text: "post-1-comment-1" } },
+                        {
+                          node: {
+                            id: "comment-2",
+                            text: "comment-2",
+                          },
+                        },
+                        {
+                          node: {
+                            id: "comment-3",
+                            text: "comment-3",
+                          },
+                        },
                       ],
                     },
                   },
@@ -707,20 +770,19 @@ describe("graphql-fakester", () => {
             {
               data: {
                 author: {
-                  id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
-                  email: 'kelecse',
+                  id: 'author-0', firstName: 'herubju', lastName: 'nocpebe', email: 'kelecse',
                   posts: [
                     {
-                      id: '6325555974635520',
+                      id: 'post-0',
                       title: 'post-0',
                       comments: {
                         edges: [
                           {
-                            node: { id: '308014672248832', text: 'post-0-comment-0', __typename: 'Comment' },
+                            node: { id: 'comment-0', text: 'comment-0', __typename: 'Comment' },
                             __typename: 'CommentConnectionEdge'
                           },
                           {
-                            node: { id: '1702188611010560', text: 'post-0-comment-1', __typename: 'Comment' },
+                            node: { id: 'comment-1', text: 'comment-1', __typename: 'Comment' },
                             __typename: 'CommentConnectionEdge'
                           }
                         ],
@@ -729,16 +791,16 @@ describe("graphql-fakester", () => {
                       __typename: 'Post'
                     },
                     {
-                      id: '1828976169320448',
+                      id: 'post-1',
                       title: 'post-1',
                       comments: {
                         edges: [
                           {
-                            node: { id: '4158848130613248', text: 'post-1-comment-0', __typename: 'Comment' },
+                            node: { id: 'comment-2', text: 'comment-2', __typename: 'Comment' },
                             __typename: 'CommentConnectionEdge'
                           },
                           {
-                            node: { id: '4620302535360512', text: 'post-1-comment-1', __typename: 'Comment' },
+                            node: { id: 'comment-3', text: 'comment-3', __typename: 'Comment' },
                             __typename: 'CommentConnectionEdge'
                           }
                         ],
@@ -766,10 +828,12 @@ describe("list", () => {
         typeDefs,
         mocks: {
           Author: (chance) => ({
+            id: "author-0",
             email: chance.email(),
             posts: list(3),
           }),
           Post: (chance) => ({
+            id: "post-0",
             title: `title-${chance.word()}`,
           }),
         },
@@ -786,12 +850,12 @@ describe("list", () => {
           {
             data: {
               author: {
-                id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
+                id: 'author-0', firstName: 'herubju', lastName: 'nocpebe',
                 email: 'ketis@ziluwi.cw',
                 posts: [
-                  { id: '6325555974635520', title: 'title-ha', __typename: 'Post' },
-                  { id: '308014672248832', title: 'title-felsuh', __typename: 'Post' },
-                  { id: '1702188611010560', title: 'title-rizede', __typename: 'Post' }
+                  { id: 'post-0', title: 'title-rizede', __typename: 'Post' },
+                  { id: 'post-0', title: 'title-rizede', __typename: 'Post' },
+                  { id: 'post-0', title: 'title-rizede', __typename: 'Post' }
                 ],
                 __typename: 'Author'
               }
@@ -808,6 +872,7 @@ describe("list", () => {
         typeDefs,
         mocks: {
           Author: (chance) => ({
+            id: "author-0",
             posts: list(chance.integer({ min: 1, max: 5 })),
           }),
         },
@@ -824,12 +889,11 @@ describe("list", () => {
           {
             data: {
               author: {
-                id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
-                email: 'kelecse',
+                id: 'author-0', firstName: 'herubju', lastName: 'nocpebe', email: 'kelecse',
                 posts: [
-                  { id: '6325555974635520', title: 'jeminode', __typename: 'Post' },
-                  { id: '308014672248832', title: 'orimipon', __typename: 'Post' },
-                  { id: '1702188611010560', title: 'rurzilru', __typename: 'Post' }
+                  { id: '4945079106011136', title: 'jeminode', __typename: 'Post' },
+                  { id: '6325555974635520', title: 'orimipon', __typename: 'Post' },
+                  { id: '308014672248832', title: 'rurzilru', __typename: 'Post' }
                 ],
                 __typename: 'Author'
               }
@@ -848,11 +912,11 @@ describe("cycle", () => {
     mock = new GraphQLMock({
       typeDefs,
       mocks: {
-        Author: { posts: list(5) },
+        Author: { id: "author-0", posts: list(5) },
         Post: cycle(
-          { title: "foo" },
-          (chance) => ({ title: `bar-${chance.word()}` }),
-          { title: "baz" }
+          { id: "post-0", title: "foo" },
+          (chance) => ({ id: "post-1", title: `bar-${chance.word()}` }),
+          { id: "post-2", title: "baz" }
         ),
       },
     });
@@ -868,14 +932,13 @@ describe("cycle", () => {
         {
           data: {
             author: {
-              id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
-              email: 'kelecse',
+              id: 'author-0', firstName: 'herubju', lastName: 'nocpebe', email: 'kelecse',
               posts: [
-                { id: '6325555974635520', title: 'foo', __typename: 'Post' },
-                { id: '308014672248832', title: 'bar-ketis', __typename: 'Post' },
-                { id: '1702188611010560', title: 'baz', __typename: 'Post' },
-                { id: '1828976169320448', title: 'foo', __typename: 'Post' },
-                { id: '4158848130613248', title: 'bar-ziluwi', __typename: 'Post' }
+                { id: 'post-0', title: 'foo', __typename: 'Post' },
+                { id: 'post-1', title: 'bar-ziluwi', __typename: 'Post' },
+                { id: 'post-2', title: 'baz', __typename: 'Post' },
+                { id: 'post-0', title: 'foo', __typename: 'Post' },
+                { id: 'post-1', title: 'bar-ziluwi', __typename: 'Post' }
               ],
               __typename: 'Author'
             }
@@ -893,10 +956,15 @@ describe("values", () => {
     mock = new GraphQLMock({
       typeDefs,
       mocks: {
-        Author: { posts: list(5) },
-        Post: values({ title: "foo" }, { title: "bar" }, (chance) => ({
-          title: `baz-${chance.word()}`,
-        })),
+        Author: { id: "author-0", posts: list(5) },
+        Post: values(
+          { id: "post-0", title: "foo" },
+          { id: "post-1", title: "bar" },
+          (chance) => ({
+            id: `id-${chance.guid()}`,
+            title: `baz-${chance.word()}`,
+          })
+        ),
       },
     });
   });
@@ -911,14 +979,25 @@ describe("values", () => {
         {
           data: {
             author: {
-              id: '4945079106011136', firstName: 'herubju', lastName: 'nocpebe',
-              email: 'kelecse',
+              id: 'author-0', firstName: 'herubju', lastName: 'nocpebe', email: 'kelecse',
               posts: [
-                { id: '6325555974635520', title: 'foo', __typename: 'Post' },
-                { id: '308014672248832', title: 'bar', __typename: 'Post' },
-                { id: '1702188611010560', title: 'baz-ketis', __typename: 'Post' },
-                { id: '1828976169320448', title: 'baz-ziluwi', __typename: 'Post' },
-                { id: '4158848130613248', title: 'baz-zev', __typename: 'Post' }
+                { id: 'post-0', title: 'foo', __typename: 'Post' },
+                { id: 'post-1', title: 'bar', __typename: 'Post' },
+                {
+                  id: 'id-29f18c97-0d71-5cf8-a63d-97f9191765b2',
+                  title: 'baz-hunmap',
+                  __typename: 'Post'
+                },
+                {
+                  id: 'id-08b890b4-c2a4-5882-ac8d-d1c66bca694c',
+                  title: 'baz-ituse',
+                  __typename: 'Post'
+                },
+                {
+                  id: 'id-451d947d-2f4c-525b-b04d-0a792234cbcf',
+                  title: 'baz-wazzef',
+                  __typename: 'Post'
+                }
               ],
               __typename: 'Author'
             }
@@ -936,11 +1015,11 @@ describe("connection", () => {
     it("returns a total field", () => {
       expect(connection(5, { includeTotal: true }), "to equal snapshot", {
         edges: [
-          { cursor: "cursor-0", node: {} },
-          { cursor: "cursor-1", node: {} },
-          { cursor: "cursor-2", node: {} },
-          { cursor: "cursor-3", node: {} },
-          { cursor: "cursor-4", node: {} },
+          { cursor: "cursor-0" },
+          { cursor: "cursor-1" },
+          { cursor: "cursor-2" },
+          { cursor: "cursor-3" },
+          { cursor: "cursor-4" },
         ],
         pageInfo: {
           hasNextPage: true,
