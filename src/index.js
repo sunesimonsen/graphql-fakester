@@ -37,7 +37,6 @@ const connection = (length, options = {}) => {
   for (let i = 0; i < length; i++) {
     edges.push({
       cursor: `cursor-${i}`,
-      node: {},
     });
   }
 
@@ -247,6 +246,10 @@ class GraphQLMock {
       const fields = type.getFields();
 
       context = context ? `${context}.${type.name}` : type.name;
+
+      if ("id" in fields && !("id" in data)) {
+        throw new Error(`No id specified for ${context}`);
+      }
 
       Object.entries(data).forEach(([fieldName, value]) => {
         const field = fields[fieldName];
