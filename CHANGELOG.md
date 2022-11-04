@@ -1,3 +1,7 @@
+### v0.19.0 (2022-11-04)
+
+- [#100](https://github.com/sunesimonsen/graphql-fakester/pull/100) Dont merge arrays \(Major\) ([Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.18.0 (2022-11-03)
 
 - [Don't require ids on empty mocks](https://github.com/sunesimonsen/graphql-fakester/commit/15e5f5674eda6da1238d018492f77e9abcf78f5d) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
