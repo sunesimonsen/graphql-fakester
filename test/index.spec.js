@@ -611,7 +611,7 @@ describe("graphql-fakester", () => {
                 Author: (chance) => ({
                   id: chance.guid(),
                   email: chance.email(),
-                  posts: list(3),
+                  posts: [{}, {}, {}],
                 }),
                 Post: (chance) => ({
                   id: chance.guid(),
@@ -629,6 +629,7 @@ describe("graphql-fakester", () => {
           id: "author-0",
           firstName: "Jane",
           lastName: "Doe",
+          posts: [{ id: "my-post", title: "Arrays override" }, {}],
         }),
       });
 
@@ -644,19 +645,10 @@ describe("graphql-fakester", () => {
                 id: 'author-0', firstName: 'Jane', lastName: 'Doe',
                 email: 'hunmap@cuwcodbo.su',
                 posts: [
+                  { id: 'my-post', title: 'Arrays override', __typename: 'Post' },
                   {
                     id: 'cedc44ce-2648-5f34-8300-8cec72982034',
                     title: 'title-jahnul',
-                    __typename: 'Post'
-                  },
-                  {
-                    id: '91741d05-4ccd-5c70-999f-36a4c2dd48e7',
-                    title: 'title-so',
-                    __typename: 'Post'
-                  },
-                  {
-                    id: 'b062790a-03d1-5b88-ae13-38f0baaddd5f',
-                    title: 'title-kub',
                     __typename: 'Post'
                   }
                 ],

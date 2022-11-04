@@ -159,17 +159,19 @@ class GraphQLMock {
         return (...args) => {
           const bResult = b(...args);
 
-          if (bResult === null) {
-            return bResult;
-          }
-
-          if (Array.isArray(bResult)) {
+          if (bResult == null || Array.isArray(bResult)) {
             return bResult;
           }
 
           const aResult = a(...args);
 
-          return merge(aResult, bResult);
+          return mergeWith({}, aResult, bResult, (a, b) => {
+            if (a == null) return b;
+            if (Array.isArray(b)) return b;
+            if (typeof b !== "object") return b;
+
+            return merge({}, a, b);
+          });
         };
       }
 

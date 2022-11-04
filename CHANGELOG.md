@@ -1,3 +1,8 @@
+### v0.18.0 (2022-11-03)
+
+- [Don't require ids on empty mocks](https://github.com/sunesimonsen/graphql-fakester/commit/15e5f5674eda6da1238d018492f77e9abcf78f5d) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+- [Fix required ids in documentation](https://github.com/sunesimonsen/graphql-fakester/commit/908b985fddb929b832ed561d6b642baeb5df54ef) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.17.0 (2022-11-03)
 
 - [#99](https://github.com/sunesimonsen/graphql-fakester/pull/99) Require ids on mocks \(Major\) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
