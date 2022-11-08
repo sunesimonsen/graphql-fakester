@@ -95,6 +95,7 @@ const authorQuery = `
       posts {
         id
         title
+        votes
       }
     }
   }
@@ -403,7 +404,10 @@ describe("graphql-fakester", () => {
               id: "author-0",
               firstName: "Jane",
               lastName: "Doe",
-              posts: [{ id: "post-0", title: "First post" }, { id: "post-1" }],
+              posts: [
+                { id: "post-0", title: "First post", votes: 0 },
+                { id: "post-1", votes: 3 },
+              ],
             },
           },
         });
@@ -421,8 +425,8 @@ describe("graphql-fakester", () => {
                 author: {
                   id: 'author-0', firstName: 'Jane', lastName: 'Doe', email: 'herubju',
                   posts: [
-                    { id: 'post-0', title: 'First post', __typename: 'Post' },
-                    { id: 'post-1', title: 'nocpebe', __typename: 'Post' }
+                    { id: 'post-0', title: 'First post', votes: 0, __typename: 'Post' },
+                    { id: 'post-1', title: 'nocpebe', votes: 3, __typename: 'Post' }
                   ],
                   __typename: 'Author'
                 }
@@ -442,6 +446,7 @@ describe("graphql-fakester", () => {
               id: "author-0",
               email: chance.email(),
             }),
+            Post: { id: "id", votes: 0 },
           },
           resolvers: (store) => ({
             Query: {
@@ -464,8 +469,8 @@ describe("graphql-fakester", () => {
                   id: '6', firstName: 'herubju', lastName: 'nocpebe',
                   email: 'ketis@ziluwi.cw',
                   posts: [
-                    { id: '4945079106011136', title: 'kelecse', __typename: 'Post' },
-                    { id: '6325555974635520', title: 'jeminode', __typename: 'Post' }
+                    { id: 'id', title: 'kelecse', votes: 0, __typename: 'Post' },
+                    { id: 'id', title: 'kelecse', votes: 0, __typename: 'Post' }
                   ],
                   __typename: 'Author'
                 }
@@ -492,6 +497,7 @@ describe("graphql-fakester", () => {
             Post: (chance) => ({
               id: "post-0",
               title: `title-${chance.word()}`,
+              votes: 0,
             }),
           },
         });
@@ -510,8 +516,8 @@ describe("graphql-fakester", () => {
                   id: 'author-0', firstName: 'herubju', lastName: 'nocpebe',
                   email: 'ketis@ziluwi.cw',
                   posts: [
-                    { id: 'post-1', title: 'specific-title', __typename: 'Post' },
-                    { id: 'post-2', title: 'title-ha', __typename: 'Post' }
+                    { id: 'post-1', title: 'specific-title', votes: 0, __typename: 'Post' },
+                    { id: 'post-2', title: 'title-felsuh', votes: 0, __typename: 'Post' }
                   ],
                   __typename: 'Author'
                 }
@@ -630,6 +636,7 @@ describe("graphql-fakester", () => {
                 Post: (chance) => ({
                   id: chance.guid(),
                   title: `title-${chance.word()}`,
+                  votes: 0,
                 }),
               },
               mocks,
@@ -643,7 +650,7 @@ describe("graphql-fakester", () => {
           id: "author-0",
           firstName: "Jane",
           lastName: "Doe",
-          posts: [{ id: "my-post", title: "Arrays override" }, {}],
+          posts: [{ id: "my-post", title: "Arrays override", votes: 42 }, {}],
         }),
       });
 
@@ -659,10 +666,11 @@ describe("graphql-fakester", () => {
                 id: 'author-0', firstName: 'Jane', lastName: 'Doe',
                 email: 'hunmap@cuwcodbo.su',
                 posts: [
-                  { id: 'my-post', title: 'Arrays override', __typename: 'Post' },
+                  { id: 'my-post', title: 'Arrays override', votes: 42, __typename: 'Post' },
                   {
                     id: 'cedc44ce-2648-5f34-8300-8cec72982034',
                     title: 'title-jahnul',
+                    votes: 0,
                     __typename: 'Post'
                   }
                 ],
@@ -842,6 +850,7 @@ describe("list", () => {
           Post: (chance) => ({
             id: "post-0",
             title: `title-${chance.word()}`,
+            votes: 0,
           }),
         },
       });
@@ -860,9 +869,9 @@ describe("list", () => {
                 id: 'author-0', firstName: 'herubju', lastName: 'nocpebe',
                 email: 'ketis@ziluwi.cw',
                 posts: [
-                  { id: 'post-0', title: 'title-rizede', __typename: 'Post' },
-                  { id: 'post-0', title: 'title-rizede', __typename: 'Post' },
-                  { id: 'post-0', title: 'title-rizede', __typename: 'Post' }
+                  { id: 'post-0', title: 'title-rizede', votes: 0, __typename: 'Post' },
+                  { id: 'post-0', title: 'title-rizede', votes: 0, __typename: 'Post' },
+                  { id: 'post-0', title: 'title-rizede', votes: 0, __typename: 'Post' }
                 ],
                 __typename: 'Author'
               }
@@ -882,6 +891,10 @@ describe("list", () => {
             id: "author-0",
             posts: list(chance.integer({ min: 1, max: 5 })),
           }),
+          Post: (chance) => ({
+            id: String(chance.natural()),
+            votes: 0,
+          }),
         },
       });
     });
@@ -898,9 +911,9 @@ describe("list", () => {
               author: {
                 id: 'author-0', firstName: 'herubju', lastName: 'nocpebe', email: 'kelecse',
                 posts: [
-                  { id: '4945079106011136', title: 'jeminode', __typename: 'Post' },
-                  { id: '6325555974635520', title: 'orimipon', __typename: 'Post' },
-                  { id: '308014672248832', title: 'rurzilru', __typename: 'Post' }
+                  { id: '1240024668438528', title: 'jeminode', votes: 0, __typename: 'Post' },
+                  { id: '2451287534731264', title: 'orimipon', votes: 0, __typename: 'Post' },
+                  { id: '2247633177411584', title: 'rurzilru', votes: 0, __typename: 'Post' }
                 ],
                 __typename: 'Author'
               }
@@ -941,11 +954,11 @@ describe("cycle", () => {
             author: {
               id: 'author-0', firstName: 'herubju', lastName: 'nocpebe', email: 'kelecse',
               posts: [
-                { id: 'post-0', title: 'foo', __typename: 'Post' },
-                { id: 'post-1', title: 'bar-ziluwi', __typename: 'Post' },
-                { id: 'post-2', title: 'baz', __typename: 'Post' },
-                { id: 'post-0', title: 'foo', __typename: 'Post' },
-                { id: 'post-1', title: 'bar-ziluwi', __typename: 'Post' }
+                { id: 'post-0', title: 'foo', votes: -25, __typename: 'Post' },
+                { id: 'post-1', title: 'bar-ziluwi', votes: -46, __typename: 'Post' },
+                { id: 'post-2', title: 'baz', votes: -58, __typename: 'Post' },
+                { id: 'post-0', title: 'foo', votes: -25, __typename: 'Post' },
+                { id: 'post-1', title: 'bar-ziluwi', votes: -46, __typename: 'Post' }
               ],
               __typename: 'Author'
             }
@@ -988,21 +1001,24 @@ describe("values", () => {
             author: {
               id: 'author-0', firstName: 'herubju', lastName: 'nocpebe', email: 'kelecse',
               posts: [
-                { id: 'post-0', title: 'foo', __typename: 'Post' },
-                { id: 'post-1', title: 'bar', __typename: 'Post' },
+                { id: 'post-0', title: 'foo', votes: -25, __typename: 'Post' },
+                { id: 'post-1', title: 'bar', votes: -46, __typename: 'Post' },
                 {
                   id: 'id-29f18c97-0d71-5cf8-a63d-97f9191765b2',
                   title: 'baz-hunmap',
+                  votes: -58,
                   __typename: 'Post'
                 },
                 {
                   id: 'id-08b890b4-c2a4-5882-ac8d-d1c66bca694c',
                   title: 'baz-ituse',
+                  votes: -72,
                   __typename: 'Post'
                 },
                 {
                   id: 'id-451d947d-2f4c-525b-b04d-0a792234cbcf',
                   title: 'baz-wazzef',
+                  votes: -34,
                   __typename: 'Post'
                 }
               ],
