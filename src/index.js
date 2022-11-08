@@ -45,6 +45,9 @@ const connection = (length, options = {}) => {
   if (length > 0) {
     startCursor = edges[0].cursor;
     endCursor = edges[edges.length - 1].cursor;
+  } else {
+    startCursor = null;
+    endCursor = null;
   }
 
   return {

@@ -240,6 +240,20 @@ describe("graphql-fakester", () => {
       );
     });
 
+    it("throw an error when providing an incompatible type for a Int resolver", () => {
+      expect(
+        () => {
+          // eslint-disable-next-line no-new
+          new GraphQLMock({
+            typeDefs,
+            mocks: { Post: { id: "id", votes: false } },
+          });
+        },
+        "to throw",
+        "Trying to override Post.votes (Int) with value: false"
+      );
+    });
+
     it("throw an error when providing an incompatible type for a Float resolver", () => {
       expect(
         () => {
@@ -811,6 +825,7 @@ describe("graphql-fakester", () => {
     });
   });
 });
+
 describe("list", () => {
   let mock;
 
@@ -1122,6 +1137,78 @@ describe("connection", () => {
             }
           }
         `
+      );
+    });
+  });
+
+  describe("when mocking a Relay connection resolver to zero items", () => {
+    const postsQuery = `
+        query postsQuery {
+          posts {
+            id
+            title
+            comments(first: 1) {
+              edges {
+                cursor
+                node {
+                  id
+                  text
+                }
+              }
+              pageInfo {
+                hasNextPage
+                hasPreviousPage
+                hasNextPage
+                endCursor
+              }
+              total
+            }
+          }
+        }
+      `;
+
+    beforeEach(async () => {
+      mock = new GraphQLMock({
+        typeDefs,
+        mocks: {
+          Query: {
+            posts: list(1),
+          },
+          CommentConnection: connection(0, { includeTotal: true }),
+        },
+      });
+    });
+
+    it("returns the specified zero of items in the connection", async () => {
+      const result = await mock.execute(postsQuery);
+
+      expect(
+        result,
+        "to inspect as snapshot",
+        expect.unindent`
+        {
+          data: {
+            posts: [
+              {
+                id: '4945079106011136',
+                title: 'herubju',
+                comments: {
+                  edges: [],
+                  pageInfo: {
+                    hasNextPage: true,
+                    hasPreviousPage: false,
+                    endCursor: null,
+                    __typename: 'PageInfo'
+                  },
+                  total: 0,
+                  __typename: 'CommentConnection'
+                },
+                __typename: 'Post'
+              }
+            ]
+          }
+        }
+      `
       );
     });
   });
