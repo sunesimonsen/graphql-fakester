@@ -60,6 +60,7 @@ const typeDefs = `
   type Query {
     posts: [Post]
     author(id: ID!): Author
+    randomInt(seed: Int): Int
   }
 
   type Mutation {
@@ -392,6 +393,31 @@ describe("graphql-fakester", () => {
             }
           `
         );
+      });
+    });
+
+    describe("mocking a resolver on an object", () => {
+      beforeEach(() => {
+        mock = new GraphQLMock({
+          typeDefs,
+          mocks: {
+            Query: {
+              randomInt: 0,
+            },
+          },
+        });
+      });
+
+      const randomIntQuery = `
+        query randomIntQuery {
+          randomInt
+        }
+      `;
+
+      it("uses the provided result will be used", async () => {
+        const result = await mock.execute(randomIntQuery);
+
+        expect(result, "to inspect as snapshot", "{ data: { randomInt: 0 } }");
       });
     });
 
