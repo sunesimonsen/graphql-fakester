@@ -4,7 +4,6 @@ const ukkonen = require("ukkonen");
 
 const {
   addMocksToSchema,
-  createMockStore,
   MockList,
   isMockList,
 } = require("@graphql-tools/mock");
@@ -183,15 +182,9 @@ class GraphQLMock {
 
     this._validateMocksAgainstSchema({ mocks: mergedMocks, schema });
 
-    this.mockStore = createMockStore({
-      schema,
-      mocks: mergedMocks,
-    });
-
     this.schema = addMocksToSchema({
       schema,
       resolvers,
-      store: this.mockStore,
       mocks: mergedMocks,
     });
   }

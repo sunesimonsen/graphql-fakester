@@ -20,9 +20,16 @@ const typeDefs = `
     favoritePost: Post
   }
 
+  enum Endorsement {
+    LOVE
+    LIKE
+    DISLIKE
+  }
+
   type Comment {
     id: ID!
     text: String!
+    endorsementCount(type: Endorsement!): Int!
   }
 
   type CommentConnectionEdge {
@@ -59,6 +66,7 @@ const typeDefs = `
 
   type Query {
     posts: [Post]
+    post(id: ID!): Post
     author(id: ID!): Author
     randomInt(seed: Int): Int
   }
@@ -1254,4 +1262,72 @@ describe("connection", () => {
       );
     });
   });
+});
+
+it("passes regression test for issue #103", async () => {
+  const mock = new GraphQLMock({
+    typeDefs,
+    resolvers: {
+      Query: {
+        post: () => ({
+          id: "post-0",
+          comments: {
+            edges: [
+              { node: { id: "comment-0", endorsementCount: 0 } },
+              { node: { id: "comment-1", endorsementCount: 10 } },
+              { node: { id: "comment-2", endorsementCount: 42 } },
+            ],
+          },
+        }),
+      },
+    },
+  });
+
+  const postCommentsQuery = `
+      query postComments($id: ID!) {
+        post(id: $id) {
+          comments {
+            edges {
+              node {
+                id
+                endorsementCount(type: LIKE)
+              }
+            }
+          }
+        }
+      }
+    `;
+
+  const result = await mock.execute(postCommentsQuery, { id: "post-0" });
+
+  expect(
+    result,
+    "to inspect as snapshot",
+    expect.unindent`
+        {
+          data: {
+            post: {
+              comments: {
+                edges: [
+                  {
+                    node: { id: 'comment-0', endorsementCount: 0, __typename: 'Comment' },
+                    __typename: 'CommentConnectionEdge'
+                  },
+                  {
+                    node: { id: 'comment-1', endorsementCount: 10, __typename: 'Comment' },
+                    __typename: 'CommentConnectionEdge'
+                  },
+                  {
+                    node: { id: 'comment-2', endorsementCount: 42, __typename: 'Comment' },
+                    __typename: 'CommentConnectionEdge'
+                  }
+                ],
+                __typename: 'CommentConnection'
+              },
+              __typename: 'Post'
+            }
+          }
+        }
+      `
+  );
 });
