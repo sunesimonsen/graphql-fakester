@@ -1267,22 +1267,20 @@ describe("connection", () => {
 it("passes regression test for issue #103", async () => {
   const mock = new GraphQLMock({
     typeDefs,
-    mocks: [
-      {
-        Query: {
-          post: {
-            id: "post-0",
-            comments: {
-              edges: [
-                { node: { id: "comment-0", endorsementCount: 0 } },
-                { node: { id: "comment-1", endorsementCount: 10 } },
-                { node: { id: "comment-2", endorsementCount: 42 } },
-              ],
-            },
+    resolvers: {
+      Query: {
+        post: () => ({
+          id: "post-0",
+          comments: {
+            edges: [
+              { node: { id: "comment-0", endorsementCount: 0 } },
+              { node: { id: "comment-1", endorsementCount: 10 } },
+              { node: { id: "comment-2", endorsementCount: 42 } },
+            ],
           },
-        },
+        }),
       },
-    ],
+    },
   });
 
   const postCommentsQuery = `
