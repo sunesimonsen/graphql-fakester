@@ -1,6 +1,19 @@
+### v1.0.0 (2024-06-17)
+
+#### Pull requests
+
+- [#125](https://github.com/sunesimonsen/graphql-fakester/pull/125) Upgrade dependencies \(Major\) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
+#### Commits to main
+
+- [Update package-lock.json](https://github.com/sunesimonsen/graphql-fakester/commit/f33f0f96767d56857b8d2e554dad8f97a916009b) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+- [Test mocking a resolver field](https://github.com/sunesimonsen/graphql-fakester/commit/ef03921a2670a322276544507876d3da01537591) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+- [Testing that we can override numbers inside of lists](https://github.com/sunesimonsen/graphql-fakester/commit/3b7a49a8c3d044cc398143d7b65eb58704f02201) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+- [Some minor fixes and more tests](https://github.com/sunesimonsen/graphql-fakester/commit/36f13a6fdae6d3cae62ca478118472397090ed67) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
+
 ### v0.19.0 (2022-11-04)
 
-- [#100](https://github.com/sunesimonsen/graphql-fakester/pull/100) Dont merge arrays \(Major\) ([Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk))
+- [#100](https://github.com/sunesimonsen/graphql-fakester/pull/100) Dont merge arrays \(Major\) ([Sune Simonsen](mailto:sune@we-knowhow.dk))
 
 ### v0.18.0 (2022-11-03)
 
@@ -38,7 +51,7 @@
 
 ### v0.13.2 (2022-11-01)
 
-- [#91](https://github.com/sunesimonsen/graphql-fakester/pull/91) Validate mock structure against schema ([Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk), [Sune Simonsen](mailto:sune@we-knowhow.dk))
+- [#91](https://github.com/sunesimonsen/graphql-fakester/pull/91) Validate mock structure against schema ([Sune Simonsen](mailto:sune@we-knowhow.dk))
 
 ### v0.13.0 (2022-11-01)
 
