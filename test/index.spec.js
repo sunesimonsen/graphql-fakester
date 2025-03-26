@@ -464,6 +464,7 @@ describe("graphql-fakester", () => {
       describe("by providing a function", () => {
         const authorNameQuery = `
           query authorFirstName($id: ID!) {
+            randomInt
             author(id: $id) {
               id
               firstName
@@ -476,7 +477,8 @@ describe("graphql-fakester", () => {
             typeDefs,
             mocks: {
               Query: {
-                author: (id) => ({
+                randomInt: 0,
+                author: (chance, { id }) => ({
                   id,
                   firstName: "Alice",
                 }),
@@ -486,12 +488,37 @@ describe("graphql-fakester", () => {
         });
 
         it("returns the mocked author", async () => {
-          const result = await mock.execute(authorNameQuery, { id: "10" });
+          const result = await mock.execute(authorNameQuery, { id: "12" });
 
           expect(
             result,
             "to inspect as snapshot",
-            "{ data: { author: { id: '10', firstName: 'Alice' } } }"
+            "{ data: { randomInt: 0, author: { id: '12', firstName: 'Alice', __typename: 'Author' } } }"
+          );
+        });
+      });
+
+      describe("when providing invalid resolvers", () => {
+        it("throws an error for unknown resolvers", async () => {
+          expect(
+            () => {
+              // eslint-disable-next-line no-new
+              new GraphQLMock({
+                typeDefs,
+                mocks: {
+                  Query: {
+                    randomInt: 0,
+                    author: (chance, { id }) => ({
+                      id,
+                      firstName: "Alice",
+                    }),
+                    unknownResolver: () => 10,
+                  },
+                },
+              });
+            },
+            "to throw",
+            "Trying to override unknown field Query.unknownResolver"
           );
         });
       });

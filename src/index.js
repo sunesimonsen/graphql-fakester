@@ -22,6 +22,7 @@ const {
 const merge = require("lodash/merge");
 const mergeWith = require("lodash/mergeWith");
 const Chance = require("chance");
+const { isRootType } = require("@graphql-tools/mock/utils");
 
 const list = (length) => new MockList(length);
 
@@ -126,6 +127,8 @@ class GraphQLMock {
     ].map((mocks) =>
       Object.fromEntries(
         Object.entries(mocks).map(([typeName, mock]) => {
+          const type = schema.getType(typeName);
+
           if (typeof mock === "function") {
             const chance = new Chance(this._chance.natural());
             let seq = 0;
@@ -144,6 +147,55 @@ class GraphQLMock {
                 return data;
               },
             ];
+          } else if (type && isRootType(type, schema)) {
+            const resolvedMocks = Object.entries(mock).map(
+              ([fieldName, fieldMock]) => {
+                const field = type.getFields()[fieldName];
+
+                if (!field) {
+                  const hint = createHint({
+                    possibleNames: Object.keys(type.getFields()),
+                    name: fieldName,
+                  });
+
+                  throw new Error(
+                    `Trying to override unknown field ${typeName}.${fieldName}${hint}`
+                  );
+                }
+
+                if (typeof fieldMock === "function") {
+                  const chance = new Chance(this._chance.natural());
+                  let seq = 0;
+
+                  return [
+                    fieldName,
+                    (variables) => {
+                      const data = fieldMock(chance, variables, seq++);
+
+                      this._validateDataAgainstType({
+                        schema,
+                        data,
+                        type: field.type,
+                        context: `${typeName}.${fieldName}`,
+                      });
+
+                      return data;
+                    },
+                  ];
+                } else {
+                  this._validateDataAgainstType({
+                    schema,
+                    data: fieldMock,
+                    type: field.type,
+                    context: `${typeName}.${fieldName}`,
+                  });
+
+                  return [fieldName, fieldMock];
+                }
+              }
+            );
+
+            return [typeName, () => Object.fromEntries(resolvedMocks)];
           } else {
             this._validateDataAgainstTypeName({
               schema,
