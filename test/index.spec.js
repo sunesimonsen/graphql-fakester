@@ -397,27 +397,169 @@ describe("graphql-fakester", () => {
     });
 
     describe("mocking a resolver on an object", () => {
-      beforeEach(() => {
-        mock = new GraphQLMock({
-          typeDefs,
-          mocks: {
-            Query: {
-              randomInt: 0,
+      describe("by using a static value", () => {
+        beforeEach(() => {
+          mock = new GraphQLMock({
+            typeDefs,
+            mocks: {
+              Query: {
+                randomInt: 0,
+              },
             },
-          },
+          });
         });
-      });
 
-      const randomIntQuery = `
+        const randomIntQuery = `
         query randomIntQuery {
           randomInt
         }
       `;
 
-      it("uses the provided result will be used", async () => {
-        const result = await mock.execute(randomIntQuery);
+        it("uses the provided result will be used", async () => {
+          const result = await mock.execute(randomIntQuery);
 
-        expect(result, "to inspect as snapshot", "{ data: { randomInt: 0 } }");
+          expect(
+            result,
+            "to inspect as snapshot",
+            "{ data: { randomInt: 0 } }"
+          );
+        });
+      });
+
+      describe("by providing a function for Query", () => {
+        const authorNameQuery = `
+          query authorFirstName($id: ID!) {
+            author(id: $id) {
+              id
+              firstName
+            }
+          }
+        `;
+
+        beforeEach(() => {
+          mock = new GraphQLMock({
+            typeDefs,
+            mocks: {
+              Query: () => ({
+                author: {
+                  id: authorId,
+                  firstName: "Alice",
+                },
+              }),
+            },
+          });
+        });
+
+        it("returns the mocked author", async () => {
+          const result = await mock.execute(authorNameQuery, { id: "10" });
+
+          expect(
+            result,
+            "to inspect as snapshot",
+            "{ data: { author: { id: '6', firstName: 'Alice', __typename: 'Author' } } }"
+          );
+        });
+      });
+
+      describe("by providing a function for Mutation", () => {
+        const upvotePostMutation = `
+          mutation upvotePost($postId: ID!) {
+            upvotePost(postId: $postId) {
+              id
+              title
+              votes
+            }
+          }
+        `;
+
+        beforeEach(() => {
+          mock = new GraphQLMock({
+            typeDefs,
+            mocks: {
+              Mutation: {
+                upvotePost: (chance, { postId }) => ({
+                  id: postId,
+                  title: "Post Title",
+                  votes: 55,
+                }),
+              },
+            },
+          });
+        });
+
+        it("returns the mocked upvoted post", async () => {
+          const result = await mock.execute(upvotePostMutation, {
+            postId: "random-id",
+          });
+
+          expect(
+            result,
+            "to inspect as snapshot",
+            `{ data: { upvotePost: { id: 'random-id', title: 'Post Title', votes: 55, __typename: 'Post' } } }`
+          );
+        });
+      });
+
+      describe("by providing a function", () => {
+        const authorNameQuery = `
+          query authorFirstName($id: ID!) {
+            randomInt
+            author(id: $id) {
+              id
+              firstName
+            }
+          }
+        `;
+
+        beforeEach(() => {
+          mock = new GraphQLMock({
+            typeDefs,
+            mocks: {
+              Query: {
+                randomInt: 0,
+                author: (chance, { id }) => ({
+                  id,
+                  firstName: "Alice",
+                }),
+              },
+            },
+          });
+        });
+
+        it("returns the mocked author", async () => {
+          const result = await mock.execute(authorNameQuery, { id: "12" });
+
+          expect(
+            result,
+            "to inspect as snapshot",
+            "{ data: { randomInt: 0, author: { id: '12', firstName: 'Alice', __typename: 'Author' } } }"
+          );
+        });
+      });
+
+      describe("when providing invalid resolvers", () => {
+        it("throws an error for unknown resolvers", async () => {
+          expect(
+            () => {
+              // eslint-disable-next-line no-new
+              new GraphQLMock({
+                typeDefs,
+                mocks: {
+                  Query: {
+                    randomInt: 0,
+                    author: (chance, { id }) => ({
+                      id,
+                      firstName: "Alice",
+                    }),
+                    unknownResolver: () => 10,
+                  },
+                },
+              });
+            },
+            "to throw",
+            "Trying to override unknown field Query.unknownResolver"
+          );
+        });
       });
     });
 
