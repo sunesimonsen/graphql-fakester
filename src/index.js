@@ -126,8 +126,7 @@ class GraphQLMock {
 
       return [
         type.name,
-        (variables) => {
-          // FIXME
+        (variables, parent, ...other) => {
           const data = type.args
             ? mock(chance, variables, seq++)
             : mock(chance, seq++);
