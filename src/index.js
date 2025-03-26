@@ -120,6 +120,30 @@ class GraphQLMock {
     this._cache = new Map();
     this._chance = new Chance(seed);
 
+    const resolveMockFn = (type, mock, context) => {
+      const chance = new Chance(this._chance.natural());
+      let seq = 0;
+
+      return [
+        type.name,
+        (variables) => {
+          // FIXME
+          const data = type.args
+            ? mock(chance, variables, seq++)
+            : mock(chance, seq++);
+
+          this._validateDataAgainstType({
+            schema,
+            data,
+            type,
+            context,
+          });
+
+          return data;
+        },
+      ];
+    };
+
     const mockArray = [
       {},
       defaultMocks,
@@ -130,23 +154,7 @@ class GraphQLMock {
           const type = schema.getType(typeName);
 
           if (typeof mock === "function") {
-            const chance = new Chance(this._chance.natural());
-            let seq = 0;
-
-            return [
-              typeName,
-              () => {
-                const data = mock(chance, seq++);
-
-                this._validateDataAgainstTypeName({
-                  schema,
-                  data,
-                  typeName,
-                });
-
-                return data;
-              },
-            ];
+            return resolveMockFn(type, mock);
           } else if (type && isRootType(type, schema)) {
             const resolvedMocks = Object.entries(mock).map(
               ([fieldName, fieldMock]) => {
@@ -164,24 +172,11 @@ class GraphQLMock {
                 }
 
                 if (typeof fieldMock === "function") {
-                  const chance = new Chance(this._chance.natural());
-                  let seq = 0;
-
-                  return [
-                    fieldName,
-                    (variables) => {
-                      const data = fieldMock(chance, variables, seq++);
-
-                      this._validateDataAgainstType({
-                        schema,
-                        data,
-                        type: field.type,
-                        context: `${typeName}.${fieldName}`,
-                      });
-
-                      return data;
-                    },
-                  ];
+                  return resolveMockFn(
+                    field,
+                    fieldMock,
+                    `${typeName}.${fieldName}`
+                  );
                 } else {
                   this._validateDataAgainstType({
                     schema,
