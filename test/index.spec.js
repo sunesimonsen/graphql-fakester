@@ -397,27 +397,59 @@ describe("graphql-fakester", () => {
     });
 
     describe("mocking a resolver on an object", () => {
-      beforeEach(() => {
-        mock = new GraphQLMock({
-          typeDefs,
-          mocks: {
-            Query: {
-              randomInt: 0,
+      describe("by using a static value", () => {
+        beforeEach(() => {
+          mock = new GraphQLMock({
+            typeDefs,
+            mocks: {
+              Query: {
+                randomInt: 0,
+              },
             },
-          },
+          });
         });
-      });
 
-      const randomIntQuery = `
+        const randomIntQuery = `
         query randomIntQuery {
           randomInt
         }
       `;
 
-      it("uses the provided result will be used", async () => {
-        const result = await mock.execute(randomIntQuery);
+        it("uses the provided result will be used", async () => {
+          const result = await mock.execute(randomIntQuery);
 
-        expect(result, "to inspect as snapshot", "{ data: { randomInt: 0 } }");
+          expect(
+            result,
+            "to inspect as snapshot",
+            "{ data: { randomInt: 0 } }"
+          );
+        });
+      });
+
+      describe("by providing a function", () => {
+        beforeEach(() => {
+          mock = new GraphQLMock({
+            typeDefs,
+            mocks: {
+              Query: {
+                author: (id) => ({
+                  id,
+                  firstName: "Alice",
+                }),
+              },
+            },
+          });
+        });
+
+        it("returns the mocked author", async () => {
+          const result = await mock.execute(authorQuery, { id: "10" });
+
+          expect(
+            result,
+            "to inspect as snapshot",
+            "{ data: { author: { id: '10', firstName: 'Alice' } } }"
+          );
+        });
       });
     });
 
