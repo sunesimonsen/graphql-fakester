@@ -461,6 +461,45 @@ describe("graphql-fakester", () => {
         });
       });
 
+      describe("by providing a function for Mutation", () => {
+        const upvotePostMutation = `
+          mutation upvotePost($postId: ID!) {
+            upvotePost(postId: $postId) {
+              id
+              title
+              votes
+            }
+          }
+        `;
+
+        beforeEach(() => {
+          mock = new GraphQLMock({
+            typeDefs,
+            mocks: {
+              Mutation: {
+                upvotePost: (chance, { postId }) => ({
+                  id: postId,
+                  title: "Post Title",
+                  votes: 55,
+                }),
+              },
+            },
+          });
+        });
+
+        it("returns the mocked upvoted post", async () => {
+          const result = await mock.execute(upvotePostMutation, {
+            postId: "random-id",
+          });
+
+          expect(
+            result,
+            "to inspect as snapshot",
+            `{ data: { upvotePost: { id: 'random-id', title: 'Post Title', votes: 55, __typename: 'Post' } } }`
+          );
+        });
+      });
+
       describe("by providing a function", () => {
         const authorNameQuery = `
           query authorFirstName($id: ID!) {
