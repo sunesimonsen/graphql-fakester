@@ -426,7 +426,51 @@ describe("graphql-fakester", () => {
         });
       });
 
+      describe("by providing a function for Query", () => {
+        const authorNameQuery = `
+          query authorFirstName($id: ID!) {
+            author(id: $id) {
+              id
+              firstName
+            }
+          }
+        `;
+
+        beforeEach(() => {
+          mock = new GraphQLMock({
+            typeDefs,
+            mocks: {
+              Query: () => ({
+                author: {
+                  id: authorId,
+                  firstName: "Alice",
+                },
+              }),
+            },
+          });
+        });
+
+        it("returns the mocked author", async () => {
+          const result = await mock.execute(authorNameQuery, { id: "10" });
+
+          expect(
+            result,
+            "to inspect as snapshot",
+            "{ data: { author: { id: '6', firstName: 'Alice', __typename: 'Author' } } }"
+          );
+        });
+      });
+
       describe("by providing a function", () => {
+        const authorNameQuery = `
+          query authorFirstName($id: ID!) {
+            author(id: $id) {
+              id
+              firstName
+            }
+          }
+        `;
+
         beforeEach(() => {
           mock = new GraphQLMock({
             typeDefs,
@@ -442,7 +486,7 @@ describe("graphql-fakester", () => {
         });
 
         it("returns the mocked author", async () => {
-          const result = await mock.execute(authorQuery, { id: "10" });
+          const result = await mock.execute(authorNameQuery, { id: "10" });
 
           expect(
             result,
