@@ -18,7 +18,7 @@
 
 ### v6.2.1
 
-- [Add an additional ES5-compatible bundle  \(\#1909\)](https://github.com/sunesimonsen/graphql-fakester/commit/427093b779068a1cfe1bda63503b062df3785a9d) ([Dotan Simha](mailto:dotansimha@gmail.com))
+- [Add an additional ES5-compatible bundle \(\#1909\)](https://github.com/sunesimonsen/graphql-fakester/commit/427093b779068a1cfe1bda63503b062df3785a9d) ([Dotan Simha](mailto:dotansimha@gmail.com))
 - [enhance\(stitching\): simplify subschema sets \(\#2001\)](https://github.com/sunesimonsen/graphql-fakester/commit/fe85dcb8376cbca06591ca0fcc6b70748c33c32a) ([Yaacov Rydzinski](mailto:yaacovCR@gmail.com))
 - [chore\(deps\): bump @ardatan\/aggregate-error from 0.0.1 to 0.0.2 \(\#1999\)](https://github.com/sunesimonsen/graphql-fakester/commit/968b1b36ff2e17890f3aab8386112332f9ef626a) ([dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com))
 - [chore\(deps-dev\): bump lint-staged from 10.2.13 to 10.3.0 \(\#1998\)](https://github.com/sunesimonsen/graphql-fakester/commit/e96fe5416f9df0548fc03fc02ff405477426bf89) ([dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com))
@@ -47,8 +47,8 @@
 
 - [Improved \`parse\` to support converting comments into descriptions \(\#1900\)](https://github.com/sunesimonsen/graphql-fakester/commit/46c5700a5d60012ea96dea6201ac9b8e426a1942) ([Dotan Simha](mailto:dotansimha@gmail.com))
 - [enhance\(stitching\): increase key flexibility when type merging \(\#1888\)](https://github.com/sunesimonsen/graphql-fakester/commit/640de8549564f83b96906efd214e957f316b3adf) ([Yaacov Rydzinski](mailto:yaacovCR@gmail.com))
-- [\[deploy\_website\] Fix build:api-docs \(\#1899\)](https://github.com/sunesimonsen/graphql-fakester/commit/3b984d0fbe8f3b2020949466b11fe75f00c02e14) ([Daniel Rearden](mailto:danielrearden@gmail.com))
-- [\[deploy\_website\] another attempt](https://github.com/sunesimonsen/graphql-fakester/commit/f166fb40a90f69b12b3dd24d22ab671964214149) ([Arda TANRIKULU](mailto:ardatanrikulu@gmail.com))
+- [\[deploy_website\] Fix build:api-docs \(\#1899\)](https://github.com/sunesimonsen/graphql-fakester/commit/3b984d0fbe8f3b2020949466b11fe75f00c02e14) ([Daniel Rearden](mailto:danielrearden@gmail.com))
+- [\[deploy_website\] another attempt](https://github.com/sunesimonsen/graphql-fakester/commit/f166fb40a90f69b12b3dd24d22ab671964214149) ([Arda TANRIKULU](mailto:ardatanrikulu@gmail.com))
 - [Improve types](https://github.com/sunesimonsen/graphql-fakester/commit/333cb3c3cc6d95d1cfe23d12862aebcfbd581a77) ([Arda TANRIKULU](mailto:ardatanrikulu@gmail.com))
 - [+3 more](https://github.com/sunesimonsen/graphql-fakester/compare/v6.0.17...v6.0.18)
 
@@ -82,7 +82,7 @@
 ### v6.0.14
 
 - [fix\(utils\): avoid global variable \(\#1791\)](https://github.com/sunesimonsen/graphql-fakester/commit/a4dd0ead4f654195fad3c7bb57a393eab7c69bff) ([Arda Tanrıkulu](mailto:20847995+ardatan@users.noreply.github.com))
-- [introduce TransformEnumValues and MapLeafValues  \(\#1769\)](https://github.com/sunesimonsen/graphql-fakester/commit/1f3b14a1b568e92e473c039d36f416999c604de1) ([Yaacov Rydzinski](mailto:yaacovCR@gmail.com))
+- [introduce TransformEnumValues and MapLeafValues \(\#1769\)](https://github.com/sunesimonsen/graphql-fakester/commit/1f3b14a1b568e92e473c039d36f416999c604de1) ([Yaacov Rydzinski](mailto:yaacovCR@gmail.com))
 - [fix\(merge\): support multidimensional arrays \(\#1789\)](https://github.com/sunesimonsen/graphql-fakester/commit/24101f9adaf7ac422bf64e4d3e8665f1e5047630) ([Arda Tanrıkulu](mailto:20847995+ardatan@users.noreply.github.com))
 - [Bump @babel\/parser from 7.10.4 to 7.10.5 \(\#1786\)](https://github.com/sunesimonsen/graphql-fakester/commit/a511a0f4786db65f3eefb2a3c2858e3a84626dfd) ([dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com))
 - [Bump @babel\/types from 7.10.4 to 7.10.5 \(\#1787\)](https://github.com/sunesimonsen/graphql-fakester/commit/f76cf4da6d71227648f357db48947ad8172f1a80) ([dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com))
@@ -90,11 +90,11 @@
 
 ### v6.0.13
 
-- [\[deploy\_website\] Prevent overlap between crisp and menu buttons](https://github.com/sunesimonsen/graphql-fakester/commit/f5057e660e400443e858ca30bdf4d2370b5757b8) ([Arda Tanrıkulu](mailto:20847995+ardatan@users.noreply.github.com))
+- [\[deploy_website\] Prevent overlap between crisp and menu buttons](https://github.com/sunesimonsen/graphql-fakester/commit/f5057e660e400443e858ca30bdf4d2370b5757b8) ([Arda Tanrıkulu](mailto:20847995+ardatan@users.noreply.github.com))
 - [fix\(url-loader\): send correct data for HTTP GET \(\#1778\)](https://github.com/sunesimonsen/graphql-fakester/commit/4469a6facdf69c1d53df5feae22a51d4521dd0ad) ([Arda Tanrıkulu](mailto:20847995+ardatan@users.noreply.github.com))
 - [Improve release notes](https://github.com/sunesimonsen/graphql-fakester/commit/f79c98330bd296eaadb95ac3f6d32de7f8e68053) ([Arda TANRIKULU](mailto:ardatanrikulu@gmail.com))
-- [\[deploy\_website\] fix\(build-api-docs\): Support HTTPS url as git remote](https://github.com/sunesimonsen/graphql-fakester/commit/65ad166c8882c947ce22834ec0be25ec125223de) ([Arda TANRIKULU](mailto:ardatanrikulu@gmail.com))
-- [\[deploy\_website\] Ignore docs in release template](https://github.com/sunesimonsen/graphql-fakester/commit/d3260bfb298bb274aa3ba9582312226dc4488e33) ([Arda TANRIKULU](mailto:ardatanrikulu@gmail.com))
+- [\[deploy_website\] fix\(build-api-docs\): Support HTTPS url as git remote](https://github.com/sunesimonsen/graphql-fakester/commit/65ad166c8882c947ce22834ec0be25ec125223de) ([Arda TANRIKULU](mailto:ardatanrikulu@gmail.com))
+- [\[deploy_website\] Ignore docs in release template](https://github.com/sunesimonsen/graphql-fakester/commit/d3260bfb298bb274aa3ba9582312226dc4488e33) ([Arda TANRIKULU](mailto:ardatanrikulu@gmail.com))
 - [+45 more](https://github.com/sunesimonsen/graphql-fakester/compare/v6.0.12...v6.0.13)
 
 ### v6.0.12
