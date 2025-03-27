@@ -16,7 +16,7 @@
     "lint": "eslint . && prettier --check '**/*.{js,md,json}'",
     "ci": "npm run lint && npm run test",
     "preversion": "npm run lint && npm run test",
-    "version": "offline-github-changelog --next=${npm_package_version} > CHANGELOG.md && git add CHANGELOG.md"
+    "version": "offline-github-changelog --next=${npm_package_version} > CHANGELOG.md && yarn format && git add CHANGELOG.md"
   },
   "devDependencies": {
     "eslint": "^8.26.0",
