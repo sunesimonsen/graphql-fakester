@@ -152,7 +152,7 @@ class GraphQLMock {
         Object.entries(mocks).map(([typeName, mock]) => {
           const type = schema.getType(typeName);
 
-          if (typeof mock === "function") {
+          if (type && typeof mock === "function") {
             return resolveMockFn(type, mock);
           } else if (type && isRootType(type, schema)) {
             const resolvedMocks = Object.entries(mock).map(
