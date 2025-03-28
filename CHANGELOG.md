@@ -641,7 +641,11 @@
 - [add in linkContext creator api \(\#412\)](https://github.com/sunesimonsen/graphql-fakester/commit/5c5418cec88f1d5520eccc1d2e6dfaa511547e4d) ([James Baxley](mailto:james@meteor.com))
 - [v2.1.0 \(\#410\)](https://github.com/sunesimonsen/graphql-fakester/commit/640142e46414e0999431a7788c1c28d1fbd342cf) ([Mikhail Novikov](mailto:freiksenet@gmail.com))
 - [added native support for using apollo-link as the network layer \(\#409\)](https://github.com/sunesimonsen/graphql-fakester/commit/90a8e9ca50472d6b9faee18e194c6730ce03af97) ([James Baxley](mailto:james@meteor.com))
-- [+134 more](https://github.com/sunesimonsen/graphql-fakester/compare/v2.0.0...v2.2.0)
+- [+134 more](https://github.com/sunesimonsen/graphql-fakester/compare/v2.0.1...v2.2.0)
+
+### v2.0.1 (2025-03-28)
+
+- [#127](https://github.com/sunesimonsen/graphql-fakester/pull/127) Ensure that unknown types are not resolved ([Albert Fernández](mailto:afernandez@zendesk.com))
 
 ### v2.0.0 (2025-03-26)
 
