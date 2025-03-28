@@ -649,6 +649,24 @@ describe("graphql-fakester", () => {
       });
     });
 
+    describe("when providing a mock for an unknown field", () => {
+      it("throws an error when mocking an unknown field", () => {
+        expect(
+          () => {
+            // eslint-disable-next-line no-new
+            new GraphQLMock({
+              typeDefs,
+              mocks: {
+                Fload: (chance) => chance.floating({ min: -100, max: 100 }),
+              },
+            });
+          },
+          "to throw",
+          "Trying to override unknown type: Fload - did you mean Float"
+        );
+      });
+    });
+
     describe("when mocking a list resolver with an array", () => {
       beforeEach(async () => {
         mock = new GraphQLMock({
